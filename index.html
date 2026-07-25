@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>うみのさんすう ― マリンとあそぼう</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --deep:#06345c;
+  --sea:#0e7fa8;
+  --shallow:#3fc8d8;
+  --foam:#b8f2e6;
+  --pearl:#fffaf0;
+  --coral:#ff7a59;
+  --sun:#ffcf4a;
+  --ink:#0a2b45;
+  --font:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","ヒラギノ丸ゴ ProN W4",system-ui,sans-serif;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  margin:0;font-family:var(--font);color:var(--pearl);
+  background:linear-gradient(180deg,#0a4f7a 0%,#0e7fa8 45%,#3fc8d8 100%);
+  overflow:hidden;user-select:none;
+}
+/* ── ambient bubbles ─────────────────────────── */
+#bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.bub{position:absolute;bottom:-60px;border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.8),rgba(255,255,255,.12));
+  animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-115vh) translateX(var(--dx,0px));opacity:0}}
+
+.wrap{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;
+  max-width:560px;margin:0 auto;padding:10px 14px calc(14px + env(safe-area-inset-bottom))}
+
+/* ── top bar ─────────────────────────────────── */
+.top{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.badge{background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.3);
+  border-radius:999px;padding:6px 14px;font-weight:800;font-size:15px;backdrop-filter:blur(4px)}
+.stars{background:var(--sun);color:#7a4a00;border-color:#fff}
+.iconbtn{margin-left:auto;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.3);
+  color:#fff;border-radius:999px;width:46px;height:46px;font-size:21px;cursor:pointer}
+.iconbtn:active{transform:scale(.92)}
+
+/* progress dots */
+.dots{display:flex;gap:7px;justify-content:center;margin:10px 0 4px;flex:0 0 auto}
+.dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.25);
+  border:2px solid rgba(255,255,255,.45);transition:.25s}
+.dot.on{background:var(--sun);border-color:#fff;transform:scale(1.25)}
+
+/* ── stage / question ────────────────────────── */
+.stagename{text-align:center;font-weight:800;font-size:17px;opacity:.95;flex:0 0 auto}
+.q{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:10px;min-height:0}
+.qtitle{text-align:center;font-size:clamp(22px,6.5vw,32px);font-weight:800;
+  text-shadow:0 3px 0 rgba(0,60,90,.35);line-height:1.3}
+.tray{background:rgba(255,255,255,.14);border:3px solid rgba(255,255,255,.35);
+  border-radius:26px;padding:12px;display:flex;align-items:center;justify-content:center;
+  flex-wrap:wrap;gap:8px;min-height:78px;max-height:38vh;overflow:auto}
+.grp{display:grid;gap:2px;justify-items:center}
+.fish{position:relative;font-size:clamp(22px,7vw,34px);line-height:1.1;animation:swim 2.6s ease-in-out infinite}
+/* ひきざん：へった ぶんは バイバイ */
+.gone{opacity:.3;filter:grayscale(1);animation:none}
+.gone::after{content:"✖";position:absolute;inset:0;display:flex;align-items:center;
+  justify-content:center;color:#ff3b1f;font-weight:800;font-size:.85em;opacity:.95}
+.caption{width:100%;text-align:center;font-size:15px;font-weight:800;color:var(--sun);margin-top:2px}
+/* かけざん：おなじ かずの グループ */
+.rows{display:flex;flex-direction:column;gap:4px;align-items:center}
+.row{display:flex;gap:2px;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.28);
+  border-radius:12px;padding:2px 7px}
+.row .fish{animation:none}
+.sm .fish{font-size:15px}.md .fish{font-size:19px}
+.fish:nth-child(2n){animation-delay:.4s}.fish:nth-child(3n){animation-delay:.8s}
+@keyframes swim{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
+.op{font-size:30px;font-weight:800;color:var(--sun);padding:0 4px}
+.bignum{font-size:clamp(40px,13vw,64px);font-weight:800;letter-spacing:2px}
+
+/* ── answers ─────────────────────────────────── */
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:0 0 auto}
+.ans{background:var(--pearl);color:var(--ink);border:none;border-bottom:6px solid #d9c9a8;
+  border-radius:22px;padding:16px 8px;font-family:var(--font);font-weight:800;
+  font-size:clamp(26px,8vw,38px);cursor:pointer;transition:transform .08s}
+.ans .grp{max-width:100%}.ans .fish{font-size:24px;animation:none}
+.ans:active{transform:translateY(4px);border-bottom-width:2px}
+.ans:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
+.ans.right{background:#8ef0b8;border-bottom-color:#3fbd7a;animation:pop .4s}
+.ans.wrong{background:#ffd9d0;border-bottom-color:#e58a72;animation:shake .4s}
+.ans.hintme{animation:glow 1s infinite}
+@keyframes pop{50%{transform:scale(1.12)}}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(255,207,74,.9)}50%{box-shadow:0 0 0 12px rgba(255,207,74,0)}}
+
+/* ── mascot ──────────────────────────────────── */
+.marin{position:relative;width:96px;height:96px;margin:0 auto;flex:0 0 auto;animation:bob 2.4s ease-in-out infinite}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.marin.happy{animation:hop .5s ease 2}
+@keyframes hop{50%{transform:translateY(-26px) scale(1.06)}}
+.marin.cheer{animation:tilt .6s ease 2}
+@keyframes tilt{25%{transform:rotate(-9deg)}75%{transform:rotate(9deg)}}
+.body{position:absolute;inset:8px 4px 0;border-radius:50% 50% 46% 46%;
+  background:radial-gradient(circle at 34% 28%,#9fe8ff,#3aa6e8 62%,#1d6fb8);
+  box-shadow:inset -6px -8px 14px rgba(0,40,80,.3),0 6px 14px rgba(0,30,60,.35)}
+.drop{position:absolute;top:-2px;left:50%;transform:translateX(-50%) rotate(45deg);
+  width:20px;height:20px;background:#bfefff;border-radius:50% 0 50% 50%}
+.eye{position:absolute;top:38px;width:15px;height:17px;background:#0a2b45;border-radius:50%}
+.eye::after{content:"";position:absolute;top:3px;left:3px;width:5px;height:5px;background:#fff;border-radius:50%}
+.eye.l{left:24px}.eye.r{right:24px}
+.marin.blink .eye{height:3px;top:45px}
+.cheek{position:absolute;top:54px;width:14px;height:9px;background:#ff9db0;border-radius:50%;opacity:.85}
+.cheek.l{left:15px}.cheek.r{right:15px}
+.mouth{position:absolute;top:56px;left:50%;transform:translateX(-50%);
+  width:20px;height:11px;border:3px solid #0a2b45;border-top:none;border-radius:0 0 20px 20px}
+.marin.sad .mouth{height:8px;border:3px solid #0a2b45;border-bottom:none;border-radius:20px 20px 0 0;top:60px}
+.fin{position:absolute;top:52px;width:16px;height:22px;background:#2e93d6;border-radius:50%}
+.fin.l{left:-2px;transform:rotate(20deg)}.fin.r{right:-2px;transform:rotate(-20deg)}
+.marin.happy .fin.l{transform:rotate(-40deg)}.marin.happy .fin.r{transform:rotate(40deg)}
+
+.speech{text-align:center;font-weight:800;font-size:19px;min-height:26px;margin-top:2px;flex:0 0 auto;
+  text-shadow:0 2px 0 rgba(0,60,90,.35)}
+
+/* ── overlays ────────────────────────────────── */
+.screen{position:fixed;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;
+  justify-content:center;gap:16px;padding:24px;text-align:center;
+  background:linear-gradient(180deg,rgba(6,52,92,.96),rgba(14,127,168,.96));backdrop-filter:blur(3px)}
+.screen.show{display:flex}
+h1{font-size:clamp(30px,10vw,46px);margin:0;font-weight:800;text-shadow:0 4px 0 rgba(0,50,80,.4)}
+.sub{font-size:17px;opacity:.9;margin:0;line-height:1.7}
+.big{background:var(--coral);color:#fff;border:none;border-bottom:7px solid #c9482c;border-radius:999px;
+  padding:18px 44px;font-family:var(--font);font-weight:800;font-size:26px;cursor:pointer}
+.big:active{transform:translateY(4px);border-bottom-width:3px}
+.ghost{background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.4);color:#fff;
+  border-radius:999px;padding:11px 26px;font-family:var(--font);font-weight:800;font-size:17px;cursor:pointer}
+.book{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;max-width:400px;
+  max-height:56vh;overflow-y:auto;padding:4px}
+.card{background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.28);border-radius:16px;
+  padding:8px 2px;font-size:28px}
+.card small{display:block;font-size:11px;font-weight:700;margin-top:3px}
+.card.locked{opacity:.32;filter:grayscale(1)}
+.newfish{font-size:78px;animation:hop .6s ease infinite}
+
+/* confetti */
+#party{position:fixed;inset:0;pointer-events:none;z-index:8;overflow:hidden}
+.conf{position:absolute;font-size:26px;animation:fall 1.5s ease-in forwards}
+@keyframes fall{0%{transform:translateY(-10vh) rotate(0);opacity:1}
+100%{transform:translateY(105vh) rotate(540deg);opacity:0}}
+
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+@media (max-height:640px){.marin{width:74px;height:74px}.tray{min-height:62px}}
+</style>
+</head>
+<body>
+<div id="bubbles"></div>
+<div id="party"></div>
+
+<!-- ========== START ========== -->
+<div class="screen show" id="startScreen">
+  <div class="marin"><div class="drop"></div><div class="body"></div>
+    <div class="fin l"></div><div class="fin r"></div>
+    <div class="eye l"></div><div class="eye r"></div>
+    <div class="cheek l"></div><div class="cheek r"></div><div class="mouth"></div></div>
+  <h1>うみのさんすう</h1>
+  <p class="sub">マリンと いっしょに<br>かず で あそぼう！</p>
+  <button class="big" id="startBtn">はじめる</button>
+  <button class="ghost" id="resetBtn">さいしょから</button>
+</div>
+
+<!-- ========== GAME ========== -->
+<div class="wrap" id="game" style="visibility:hidden">
+  <div class="top">
+    <span class="badge" id="stageBadge">ステージ 1</span>
+    <span class="badge stars" id="starBadge">⭐ 0</span>
+    <button class="iconbtn" id="soundBtn" aria-label="こえの おんおふ">🔊</button>
+    <button class="iconbtn" id="bookBtn" aria-label="さかなずかん">📖</button>
+  </div>
+  <div class="dots" id="dots"></div>
+  <div class="stagename" id="stageName"></div>
+
+  <div class="q">
+    <div class="qtitle" id="qTitle">…</div>
+    <div class="tray" id="qTray"></div>
+  </div>
+
+  <div class="marin" id="marin"><div class="drop"></div><div class="body"></div>
+    <div class="fin l"></div><div class="fin r"></div>
+    <div class="eye l"></div><div class="eye r"></div>
+    <div class="cheek l"></div><div class="cheek r"></div><div class="mouth"></div></div>
+  <div class="speech" id="speech">こたえを タッチしてね</div>
+
+  <div class="answers" id="answers"></div>
+</div>
+
+<!-- ========== LEVEL UP ========== -->
+<div class="screen" id="levelScreen">
+  <h1 id="luTitle">やったね！</h1>
+  <div class="newfish" id="luFish">🐠</div>
+  <p class="sub" id="luText"></p>
+  <button class="big" id="luBtn">つぎへ</button>
+</div>
+
+<!-- ========== FISH BOOK ========== -->
+<div class="screen" id="bookScreen">
+  <h1>さかなずかん</h1>
+  <p class="sub" id="bookCount"></p>
+  <div class="book" id="bookGrid"></div>
+  <button class="big" id="bookClose">もどる</button>
+</div>
+
+<script>
+"use strict";
+/* ───────── data ───────── */
+const FISH = [
+ ["🐟","いわし"],["🐠","くまのみ"],["🐡","ふぐ"],["🦐","えび"],["🦀","かに"],
+ ["🐙","たこ"],["🦑","いか"],["🪼","くらげ"],["🐢","うみがめ"],["🦈","さめ"],
+ ["🐬","いるか"],["🦭","あざらし"],["🐳","くじら"],["🐋","しろながす"],["🪸","さんご"],["🐚","かい"]
+];
+const SWIM = ["🐟","🐠","🐡","🦐","🦀","🐙","🦑","🪼"];
+const YAY = ["すごい！","やったね！","てんさい！","ぴったり！","かんぺき！","さすが！","だいせいかい！"];
+const CHEER = ["だいじょうぶ！","おしいっ！","もういっかい！","いっしょに かぞえよう！","つぎは できるよ！"];
+
+const STAGES = [
+ {name:"かぞえよう 1〜5",       gen:()=>count(1,5)},
+ {name:"かぞえよう 1〜10",      gen:()=>count(1,10)},
+ {name:"どっちが おおい？",     gen:()=>compare()},
+ {name:"たしざん 5まで",        gen:()=>add(1,4,5,true)},
+ {name:"たしざん 10まで",       gen:()=>add(1,9,10,true)},
+ {name:"ひきざん 10まで",       gen:()=>sub(10,true)},
+ {name:"くりあがりの たしざん", gen:()=>add(3,9,18,false,11)},
+ {name:"くりさがりの ひきざん", gen:()=>sub(18,false,11)},
+ {name:"2けたの たしざん・ひきざん", gen:()=>twoDigit()},
+ {name:"かけざん（2〜9のだん）", gen:()=>mul()}
+];
+const NEED = 6;                       // ステージ合格に必要な せいかい数
+const state = {stage:0, ok:0, stars:0, fish:0, sound:true, q:null, tries:0};
+
+/* ───────── helpers ───────── */
+const $=id=>document.getElementById(id);
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>a.sort(()=>Math.random()-.5);
+const pickFish=()=>SWIM[R(0,SWIM.length-1)];
+/* 5こで かいぎょう */
+function grp(n,e,gone){
+  const col=Math.min(n,5);
+  let s=`<span class="grp" style="grid-template-columns:repeat(${col},auto)">`;
+  for(let i=0;i<n;i++){const off=gone&&i>=n-gone;
+    s+=`<span class="fish${off?" gone":""}">${e}</span>`;}
+  return s+"</span>";}
+/* ひきざん：ぜんぶ ならべて、へる ぶんに ✖ */
+function subVis(a,b,e){
+  return grp(a,e,b)+`<div class="caption">${b}ひき バイバイ 👋 のこりは？</div>`;}
+/* かけざん：t ひき の グループが b こ */
+function mulVis(t,b,e){
+  const p=t*b,size=p>36?"sm":(p>20?"md":"");
+  let s=`<div class="rows ${size}">`;
+  for(let i=0;i<b;i++){s+='<div class="row">';
+    for(let j=0;j<t;j++)s+=`<span class="fish">${e}</span>`;s+="</div>";}
+  return s+`</div><div class="caption">${t}ひき の グループが ${b}こ</div>`;}
+function opts(ans,lo,hi){const s=new Set([ans]);let g=0;
+  while(s.size<4&&g++<80){let v=ans+R(-3,3);if(v>=lo&&v<=hi)s.add(v);}
+  while(s.size<4)s.add(R(lo,hi));
+  return shuffle([...s]).map(v=>({html:String(v),val:v}));}
+
+/* ───────── question makers ───────── */
+function count(lo,hi){const n=R(lo,hi),e=pickFish();
+  return{title:"なんびき いるかな？",say:`${e==="🪼"?"くらげ":"おさかな"}は なんびき いるかな`,
+    tray:grp(n,e),ans:n,options:opts(n,1,Math.max(hi,n+2)),hint:grp(n,e)};}
+function compare(){let a=R(1,9),b=R(1,9);while(a===b)b=R(1,9);
+  const e1=pickFish();let e2=pickFish();
+  return{title:"どっちが おおい？",say:"どっちが おおいかな",
+    tray:'<span style="font-size:20px;font-weight:800">えらんでね</span>',ans:a>b?"A":"B",
+    options:shuffle([{html:grp(a,e1),val:"A"},{html:grp(b,e2),val:"B"}]),
+    hint:grp(a,e1)+'<span class="op">と</span>'+grp(b,e2)};}
+function add(lo,hi,max,vis,min){let a,b,s,g=0;
+  do{a=R(lo,hi);b=R(lo,hi);s=a+b;}while((s>max||(min&&s<min))&&g++<200);
+  const e=pickFish();
+  return{title:`${a} + ${b} = ?`,say:`${a} たす ${b} は？`,
+    tray:vis?grp(a,e)+'<span class="op">+</span>'+grp(b,e):`<span class="bignum">${a} + ${b}</span>`,
+    ans:s,options:opts(s,1,max+2),hint:grp(s,e)};}
+function sub(max,vis,min){let a,b,d,g=0;
+  do{a=R(min?min:2,max);b=R(1,a-1);d=a-b;}while(d<1&&g++<200);
+  const e=pickFish();
+  return{title:`${a} − ${b} = ?`,say:`${a}ひき から ${b}ひき いなくなると？`,
+    tray:vis?subVis(a,b,e):`<span class="bignum">${a} − ${b}</span>`,
+    ans:d,options:opts(d,0,max),
+    hint:subVis(a,b,e).replace("のこりは？","のこりを かぞえよう！")};}
+function twoDigit(){const plus=Math.random()<.5;
+  if(plus){const a=R(11,60),b=R(11,39-(a%10>4?10:0));const s=a+b;
+    return{title:`${a} + ${b} = ?`,say:`${a} たす ${b} は？`,
+      tray:`<span class="bignum">${a} + ${b}</span>`,ans:s,options:opts(s,10,99),
+      hint:`<span style="font-size:18px;font-weight:800">10のくらい ${Math.floor(a/10)}+${Math.floor(b/10)}、1のくらい ${a%10}+${b%10}</span>`};}
+  const a=R(30,99),b=R(11,a-10);const d=a-b;
+  return{title:`${a} − ${b} = ?`,say:`${a} ひく ${b} は？`,
+    tray:`<span class="bignum">${a} − ${b}</span>`,ans:d,options:opts(d,0,99),
+    hint:`<span style="font-size:18px;font-weight:800">まず ${a} から ${Math.floor(b/10)*10} を ひこう</span>`};}
+function mul(){const t=R(2,9),b=R(1,9),p=t*b,e=pickFish();
+  return{title:`${t} × ${b} = ?`,say:`${t} かける ${b} は？`,
+    tray:mulVis(t,b,e),ans:p,options:opts(p,1,81),
+    hint:mulVis(t,b,e)+`<div class="caption">${t}を ${b}かい たすと…</div>`};}
+
+/* ───────── audio ───────── */
+let AC=null;
+function tone(f,t,d,type){if(!AC)return;const o=AC.createOscillator(),g=AC.createGain();
+  o.type=type||"sine";o.frequency.value=f;o.connect(g);g.connect(AC.destination);
+  g.gain.setValueAtTime(.0001,AC.currentTime+t);
+  g.gain.exponentialRampToValueAtTime(.25,AC.currentTime+t+.02);
+  g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+t+d);
+  o.start(AC.currentTime+t);o.stop(AC.currentTime+t+d+.05);}
+const sfxOK=()=>[523,659,784,1047].forEach((f,i)=>tone(f,i*.09,.22));
+const sfxNG=()=>{tone(392,0,.18);tone(330,.14,.26);};
+const sfxLv=()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,i*.12,.35,"triangle"));
+function say(t){if(!state.sound||!window.speechSynthesis)return;
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);
+  u.lang="ja-JP";u.rate=.95;u.pitch=1.35;speechSynthesis.speak(u);}
+
+/* ───────── storage (あれば つかう) ───────── */
+async function save(){try{await window.storage.set("umi-sansu",
+  JSON.stringify({stage:state.stage,stars:state.stars,fish:state.fish,ok:state.ok}));}catch(e){}}
+async function load(){try{const r=await window.storage.get("umi-sansu");
+  if(r&&r.value){const d=JSON.parse(r.value);Object.assign(state,d);}}catch(e){}}
+
+/* ───────── render ───────── */
+function bubbles(){const c=$("bubbles");for(let i=0;i<16;i++){const b=document.createElement("div");
+  b.className="bub";const s=R(6,26);b.style.cssText=
+  `width:${s}px;height:${s}px;left:${R(0,100)}%;--dx:${R(-40,40)}px;
+   animation-duration:${R(9,20)}s;animation-delay:-${R(0,18)}s`;c.appendChild(b);}}
+function confetti(){const p=$("party");for(let i=0;i<22;i++){const d=document.createElement("div");
+  d.className="conf";d.textContent=["⭐","🫧","🐟","🐠","✨","🌟"][R(0,5)];
+  d.style.left=R(0,96)+"%";d.style.animationDelay=(R(0,60)/100)+"s";p.appendChild(d);
+  setTimeout(()=>d.remove(),2400);}}
+function marinFace(cls){const m=$("marin");m.className="marin "+(cls||"");
+  if(cls)setTimeout(()=>m.className="marin",1400);}
+setInterval(()=>{const m=$("marin");if(m&&m.className==="marin"){m.classList.add("blink");
+  setTimeout(()=>m.classList.remove("blink"),160);}},3800);
+
+function paintTop(){
+  $("stageBadge").textContent="ステージ "+Math.min(state.stage+1,STAGES.length);
+  $("starBadge").textContent="⭐ "+state.stars;
+  $("stageName").textContent=STAGES[Math.min(state.stage,STAGES.length-1)].name;
+  let d="";for(let i=0;i<NEED;i++)d+=`<span class="dot ${i<state.ok?"on":""}"></span>`;
+  $("dots").innerHTML=d;}
+
+function nextQ(){
+  state.tries=0;
+  state.q=STAGES[Math.min(state.stage,STAGES.length-1)].gen();
+  paintTop();
+  $("qTitle").textContent=state.q.title;
+  $("qTray").innerHTML=state.q.tray;
+  const box=$("answers");box.innerHTML="";
+  state.q.options.forEach(o=>{const b=document.createElement("button");
+    b.className="ans";b.innerHTML=o.html;b.onclick=()=>answer(b,o.val);box.appendChild(b);});
+  $("speech").textContent="こたえを タッチしてね";
+  say(state.q.say);}
+
+function answer(btn,val){
+  if(btn.dataset.done)return;
+  if(val===state.q.ans){
+    btn.classList.add("right");btn.dataset.done=1;
+    [...$("answers").children].forEach(b=>b.dataset.done=1);
+    sfxOK();confetti();marinFace("happy");
+    state.stars++; const w=YAY[R(0,YAY.length-1)];
+    $("speech").textContent=w+" ⭐+1";say(w);
+    state.ok++;paintTop();save();
+    setTimeout(()=>{ if(state.ok>=NEED) levelUp(); else nextQ(); },1250);
+  }else{
+    btn.classList.add("wrong");btn.dataset.done=1;
+    sfxNG();marinFace("cheer");
+    state.tries++;
+    const w=CHEER[R(0,CHEER.length-1)];
+    $("speech").textContent=w;say(w);
+    $("qTray").innerHTML=state.q.hint;
+    if(state.tries>=2){
+      [...$("answers").children].forEach((b,i)=>{
+        if(state.q.options[i].val===state.q.ans)b.classList.add("hintme");});
+      $("speech").textContent="ひかってる ボタンだよ！";
+    }
+    setTimeout(()=>btn.classList.remove("wrong"),450);
+  }
+}
+
+function levelUp(){
+  sfxLv();confetti();
+  const got=state.fish<FISH.length;
+  const f=FISH[Math.min(state.fish,FISH.length-1)];
+  if(got)state.fish++;
+  state.ok=0;
+  const last=state.stage>=STAGES.length-1;
+  if(!last)state.stage++;
+  save();
+  $("luTitle").textContent=last?"ぜんぶ クリア！":"ステージ クリア！";
+  $("luFish").textContent=got?f[0]:"🏆";
+  $("luText").innerHTML=got
+    ?`「${f[1]}」が なかまに なったよ！<br>つぎは「${STAGES[Math.min(state.stage,STAGES.length-1)].name}」`
+    :`すごい！ もっと れんしゅう しよう！`;
+  $("levelScreen").classList.add("show");
+  say(got?`${f[1]}が なかまに なったよ`:"ぜんぶ クリア すごい");
+}
+
+function paintBook(){
+  let h="";FISH.forEach((f,i)=>{const on=i<state.fish;
+    h+=`<div class="card ${on?"":"locked"}">${on?f[0]:"❔"}<small>${on?f[1]:"？？？"}</small></div>`;});
+  $("bookGrid").innerHTML=h;
+  $("bookCount").textContent=`${state.fish} / ${FISH.length} ひき あつめたよ`;}
+
+/* ───────── wiring ───────── */
+bubbles();
+$("startBtn").onclick=async()=>{
+  try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}
+  await load();
+  $("startScreen").classList.remove("show");
+  $("game").style.visibility="visible";
+  nextQ();};
+$("resetBtn").onclick=async()=>{state.stage=0;state.ok=0;state.stars=0;state.fish=0;
+  await save();$("resetBtn").textContent="リセットしたよ！";};
+$("luBtn").onclick=()=>{$("levelScreen").classList.remove("show");nextQ();};
+$("bookBtn").onclick=()=>{paintBook();$("bookScreen").classList.add("show");};
+$("bookClose").onclick=()=>$("bookScreen").classList.remove("show");
+$("soundBtn").onclick=e=>{state.sound=!state.sound;
+  e.currentTarget.textContent=state.sound?"🔊":"🔇";
+  if(!state.sound&&window.speechSynthesis)speechSynthesis.cancel();};
+</script>
+</body>
+</html>
