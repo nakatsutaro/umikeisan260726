@@ -9,177 +9,279 @@
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --deep:#06345c;
-  --sea:#0e7fa8;
-  --shallow:#3fc8d8;
-  --foam:#b8f2e6;
-  --pearl:#fffaf0;
-  --coral:#ff7a59;
-  --sun:#ffcf4a;
-  --ink:#0a2b45;
+  --deep:#06345c; --sea:#0e7fa8; --shallow:#3fc8d8; --foam:#b8f2e6;
+  --pearl:#fffaf0; --coral:#ff7a59; --sun:#ffcf4a; --ink:#0a2b45;
   --font:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN","ヒラギノ丸ゴ ProN W4",system-ui,sans-serif;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
-body{
-  margin:0;font-family:var(--font);color:var(--pearl);
+body{margin:0;font-family:var(--font);color:var(--pearl);
   background:linear-gradient(180deg,#0a4f7a 0%,#0e7fa8 45%,#3fc8d8 100%);
-  overflow:hidden;user-select:none;
-}
-/* ── ambient bubbles ─────────────────────────── */
+  overflow:hidden;user-select:none}
+
 #bubbles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .bub{position:absolute;bottom:-60px;border-radius:50%;
   background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.8),rgba(255,255,255,.12));
   animation:rise linear infinite}
 @keyframes rise{to{transform:translateY(-115vh) translateX(var(--dx,0px));opacity:0}}
 
-.wrap{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;
-  max-width:560px;margin:0 auto;padding:10px 14px calc(14px + env(safe-area-inset-bottom))}
+.wrap{position:relative;z-index:1;height:100%;display:flex;flex-direction:column;gap:6px;
+  max-width:560px;margin:0 auto;padding:8px 14px calc(12px + env(safe-area-inset-bottom))}
 
-/* ── top bar ─────────────────────────────────── */
-.top{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+/* ── top ── */
+.top{display:flex;align-items:center;gap:6px;flex:0 0 auto}
 .badge{background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.3);
-  border-radius:999px;padding:6px 14px;font-weight:800;font-size:15px;backdrop-filter:blur(4px)}
+  border-radius:999px;padding:5px 12px;font-weight:800;font-size:14px}
 .stars{background:var(--sun);color:#7a4a00;border-color:#fff}
-.iconbtn{margin-left:auto;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.3);
-  color:#fff;border-radius:999px;width:46px;height:46px;font-size:21px;cursor:pointer}
+.iconbtn{background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.3);
+  color:#fff;border-radius:999px;width:42px;height:42px;font-size:19px;cursor:pointer;flex:0 0 auto}
+.iconbtn:first-of-type{margin-left:auto}
 .iconbtn:active{transform:scale(.92)}
+.iconbtn:focus-visible,.ans:focus-visible,.big:focus-visible,.ghost:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
 
-/* progress dots */
-.dots{display:flex;gap:7px;justify-content:center;margin:10px 0 4px;flex:0 0 auto}
-.dot{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.25);
+.dots{display:flex;gap:7px;justify-content:center;flex:0 0 auto}
+.dot{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.25);
   border:2px solid rgba(255,255,255,.45);transition:.25s}
 .dot.on{background:var(--sun);border-color:#fff;transform:scale(1.25)}
+.stagename{text-align:center;font-weight:800;font-size:15px;opacity:.92;flex:0 0 auto}
 
-/* ── stage / question ────────────────────────── */
-.stagename{text-align:center;font-weight:800;font-size:17px;opacity:.95;flex:0 0 auto}
-.q{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:10px;min-height:0}
-.qtitle{text-align:center;font-size:clamp(22px,6.5vw,32px);font-weight:800;
-  text-shadow:0 3px 0 rgba(0,60,90,.35);line-height:1.3}
-.tray{background:rgba(255,255,255,.14);border:3px solid rgba(255,255,255,.35);
-  border-radius:26px;padding:12px;display:flex;align-items:center;justify-content:center;
-  flex-wrap:wrap;gap:8px;min-height:78px;max-height:38vh;overflow:auto}
-.grp{display:grid;gap:2px;justify-items:center}
-.fish{position:relative;font-size:clamp(22px,7vw,34px);line-height:1.1;animation:swim 2.6s ease-in-out infinite}
-/* ひきざん：へった ぶんは バイバイ */
-.gone{opacity:.3;filter:grayscale(1);animation:none}
-.gone::after{content:"✖";position:absolute;inset:0;display:flex;align-items:center;
-  justify-content:center;color:#ff3b1f;font-weight:800;font-size:.85em;opacity:.95}
-.caption{width:100%;text-align:center;font-size:15px;font-weight:800;color:var(--sun);margin-top:2px}
-/* かけざん：おなじ かずの グループ */
-.rows{display:flex;flex-direction:column;gap:4px;align-items:center}
-.row{display:flex;gap:2px;background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.28);
-  border-radius:12px;padding:2px 7px}
-.row .fish{animation:none}
-.sm .fish{font-size:15px}.md .fish{font-size:19px}
-.fish:nth-child(2n){animation-delay:.4s}.fish:nth-child(3n){animation-delay:.8s}
-@keyframes swim{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-6px) rotate(3deg)}}
-.op{font-size:30px;font-weight:800;color:var(--sun);padding:0 4px}
-.bignum{font-size:clamp(40px,13vw,64px);font-weight:800;letter-spacing:2px}
+/* ── question area ── */
+.q{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:8px;min-height:0}
+.qtitle{text-align:center;font-size:clamp(19px,5.4vw,26px);font-weight:800;
+  text-shadow:0 3px 0 rgba(0,60,90,.35);line-height:1.35;white-space:pre-line}
+/* しきは「読めなくてもいい添え物」として静かに見せる（記号への慣れ） */
+.expr{text-align:center;font-size:17px;font-weight:800;letter-spacing:3px;
+  color:var(--foam);opacity:.75;min-height:20px;transition:.2s}
+.expr.speak{color:var(--sun);opacity:1;animation:exprpop .5s ease}
+@keyframes exprpop{40%{transform:scale(1.18)}}
 
-/* ── answers ─────────────────────────────────── */
-.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:0 0 auto}
+/* すいそう＝10のフレーム。数の「かたち」を毎回おなじ場所で見せる */
+.tank{background:rgba(3,45,78,.34);border:3px solid rgba(255,255,255,.32);
+  border-radius:22px;padding:8px;display:grid;column-gap:5px;row-gap:11px;
+  justify-content:center;width:100%;max-width:400px;margin:0 auto}
+.slot{position:relative;aspect-ratio:1;min-width:0;display:flex;align-items:center;justify-content:center;
+  border-radius:13px;border:2px dashed rgba(255,255,255,.20)}
+.slot.has{border-style:solid;border-color:rgba(255,255,255,.10);background:rgba(255,255,255,.07)}
+/* いなくなった席。「あいている」ことがはっきり見えるように残す */
+.slot.empty{border-color:rgba(255,255,255,.42);background:rgba(255,255,255,.03)}
+.slot.empty::after{content:"🫧";font-size:.9em;opacity:.35}
+.slot.wait{animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{background:rgba(255,207,74,.06)}50%{background:rgba(255,207,74,.26)}}
+.f{font-size:clamp(19px,6.6vw,30px);line-height:1;animation:swim 2.8s ease-in-out infinite}
+.f:nth-child(2n){animation-delay:.5s}
+@keyframes swim{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-5px) rotate(4deg)}}
+.f.away{animation:away .55s ease-in forwards}
+@keyframes away{to{transform:translate(-150px,-38px) rotate(-22deg) scale(.55);opacity:0}}
+.f.arrive{animation:arrive .5s ease-out}
+@keyframes arrive{from{transform:translate(150px,32px) scale(.5);opacity:0}}
+.f.tapped{animation:pop .35s ease}
+.slot.stay .f{animation:glowfish 1.1s ease-in-out infinite}
+@keyframes glowfish{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.numtag{position:absolute;top:-5px;right:-4px;background:var(--sun);color:#7a4a00;
+  border:2px solid #fff;border-radius:999px;min-width:21px;height:21px;font-size:12px;
+  font-weight:800;display:flex;align-items:center;justify-content:center}
+
+/* かぞえるステージ：自由配置＋タップ */
+/* 手が5本 ＝ 1れつ 5ひき。かぞえるときも すいそうと おなじ かたちに そろえる */
+.loose{display:grid;grid-template-columns:repeat(5,46px);column-gap:6px;row-gap:11px;
+  justify-content:center;padding:11px;min-height:74px;background:rgba(3,45,78,.28);
+  border:3px solid rgba(255,255,255,.3);border-radius:22px;width:fit-content;margin:0 auto}
+.loose .cell{position:relative;width:46px;height:46px;display:flex;align-items:center;
+  justify-content:center;border-radius:50%;cursor:pointer}
+.loose .cell.done{background:rgba(255,255,255,.14)}
+.hugenum{text-align:center;font-size:clamp(56px,20vw,110px);font-weight:800;letter-spacing:3px;
+  text-shadow:0 5px 0 rgba(0,60,90,.35);line-height:1}
+
+.caption{text-align:center;font-size:15px;font-weight:800;color:var(--sun);
+  min-height:21px;flex:0 0 auto}
+.replay{display:block;margin:0 auto;background:rgba(255,255,255,.16);
+  border:2px solid rgba(255,255,255,.4);color:#fff;border-radius:999px;
+  padding:6px 18px;font-family:var(--font);font-weight:800;font-size:14px;cursor:pointer;flex:0 0 auto}
+.replay[hidden]{display:none}
+
+/* ── answers ── */
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:0 0 auto}
+.answers.two{grid-template-columns:1fr 1fr}
+.answers.three{grid-template-columns:1fr 1fr 1fr}
 .ans{background:var(--pearl);color:var(--ink);border:none;border-bottom:6px solid #d9c9a8;
-  border-radius:22px;padding:16px 8px;font-family:var(--font);font-weight:800;
-  font-size:clamp(26px,8vw,38px);cursor:pointer;transition:transform .08s}
-.ans .grp{max-width:100%}.ans .fish{font-size:24px;animation:none}
+  border-radius:20px;padding:10px 6px;font-family:var(--font);font-weight:800;
+  cursor:pointer;transition:transform .08s;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:4px;min-height:74px}
+.ans .n{font-size:clamp(26px,8vw,38px);line-height:1}
+.ans .pips{display:grid;grid-template-columns:repeat(5,8px);gap:3px;justify-content:center}
+.ans .pip{width:8px;height:8px;border-radius:50%;background:#5aa9d6}
+.ans .grpwrap{display:grid;grid-template-columns:repeat(5,auto);gap:1px;justify-content:center;font-size:19px}
 .ans:active{transform:translateY(4px);border-bottom-width:2px}
-.ans:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
 .ans.right{background:#8ef0b8;border-bottom-color:#3fbd7a;animation:pop .4s}
 .ans.wrong{background:#ffd9d0;border-bottom-color:#e58a72;animation:shake .4s}
-.ans.hintme{animation:glow 1s infinite}
+.ans.dim{opacity:.45}
+.ans.hintme{animation:glow 1.1s infinite}
 @keyframes pop{50%{transform:scale(1.12)}}
 @keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
 @keyframes glow{0%,100%{box-shadow:0 0 0 0 rgba(255,207,74,.9)}50%{box-shadow:0 0 0 12px rgba(255,207,74,0)}}
 
-/* ── mascot ──────────────────────────────────── */
-.marin{position:relative;width:96px;height:96px;margin:0 auto;flex:0 0 auto;animation:bob 2.4s ease-in-out infinite}
+/* ── mascot ── */
+.marin{position:relative;width:80px;height:80px;margin:0 auto;flex:0 0 auto;animation:bob 2.4s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
 .marin.happy{animation:hop .5s ease 2}
 @keyframes hop{50%{transform:translateY(-26px) scale(1.06)}}
 .marin.cheer{animation:tilt .6s ease 2}
 @keyframes tilt{25%{transform:rotate(-9deg)}75%{transform:rotate(9deg)}}
-.body{position:absolute;inset:8px 4px 0;border-radius:50% 50% 46% 46%;
+.body{position:absolute;inset:7px 3px 0;border-radius:50% 50% 46% 46%;
   background:radial-gradient(circle at 34% 28%,#9fe8ff,#3aa6e8 62%,#1d6fb8);
   box-shadow:inset -6px -8px 14px rgba(0,40,80,.3),0 6px 14px rgba(0,30,60,.35)}
 .drop{position:absolute;top:-2px;left:50%;transform:translateX(-50%) rotate(45deg);
-  width:20px;height:20px;background:#bfefff;border-radius:50% 0 50% 50%}
-.eye{position:absolute;top:38px;width:15px;height:17px;background:#0a2b45;border-radius:50%}
-.eye::after{content:"";position:absolute;top:3px;left:3px;width:5px;height:5px;background:#fff;border-radius:50%}
-.eye.l{left:24px}.eye.r{right:24px}
-.marin.blink .eye{height:3px;top:45px}
-.cheek{position:absolute;top:54px;width:14px;height:9px;background:#ff9db0;border-radius:50%;opacity:.85}
-.cheek.l{left:15px}.cheek.r{right:15px}
-.mouth{position:absolute;top:56px;left:50%;transform:translateX(-50%);
-  width:20px;height:11px;border:3px solid #0a2b45;border-top:none;border-radius:0 0 20px 20px}
-.marin.sad .mouth{height:8px;border:3px solid #0a2b45;border-bottom:none;border-radius:20px 20px 0 0;top:60px}
-.fin{position:absolute;top:52px;width:16px;height:22px;background:#2e93d6;border-radius:50%}
+  width:17px;height:17px;background:#bfefff;border-radius:50% 0 50% 50%}
+.eye{position:absolute;top:31px;width:13px;height:15px;background:#0a2b45;border-radius:50%}
+.eye::after{content:"";position:absolute;top:3px;left:3px;width:4px;height:4px;background:#fff;border-radius:50%}
+.eye.l{left:20px}.eye.r{right:20px}
+.marin.blink .eye{height:3px;top:37px}
+.cheek{position:absolute;top:45px;width:12px;height:8px;background:#ff9db0;border-radius:50%;opacity:.85}
+.cheek.l{left:12px}.cheek.r{right:12px}
+.mouth{position:absolute;top:47px;left:50%;transform:translateX(-50%);
+  width:17px;height:10px;border:3px solid #0a2b45;border-top:none;border-radius:0 0 20px 20px}
+.fin{position:absolute;top:43px;width:14px;height:19px;background:#2e93d6;border-radius:50%}
 .fin.l{left:-2px;transform:rotate(20deg)}.fin.r{right:-2px;transform:rotate(-20deg)}
 .marin.happy .fin.l{transform:rotate(-40deg)}.marin.happy .fin.r{transform:rotate(40deg)}
-
-.speech{text-align:center;font-weight:800;font-size:19px;min-height:26px;margin-top:2px;flex:0 0 auto;
+.speech{text-align:center;font-weight:800;font-size:17px;min-height:24px;flex:0 0 auto;
   text-shadow:0 2px 0 rgba(0,60,90,.35)}
 
-/* ── overlays ────────────────────────────────── */
+/* ── overlays ── */
 .screen{position:fixed;inset:0;z-index:5;display:none;flex-direction:column;align-items:center;
-  justify-content:center;gap:16px;padding:24px;text-align:center;
-  background:linear-gradient(180deg,rgba(6,52,92,.96),rgba(14,127,168,.96));backdrop-filter:blur(3px)}
+  justify-content:center;gap:14px;padding:24px;text-align:center;overflow-y:auto;
+  background:linear-gradient(180deg,rgba(6,52,92,.96),rgba(14,127,168,.96))}
 .screen.show{display:flex}
-h1{font-size:clamp(30px,10vw,46px);margin:0;font-weight:800;text-shadow:0 4px 0 rgba(0,50,80,.4)}
-.sub{font-size:17px;opacity:.9;margin:0;line-height:1.7}
+h1{font-size:clamp(28px,9vw,42px);margin:0;font-weight:800;text-shadow:0 4px 0 rgba(0,50,80,.4)}
+.sub{font-size:16px;opacity:.92;margin:0;line-height:1.7}
 .big{background:var(--coral);color:#fff;border:none;border-bottom:7px solid #c9482c;border-radius:999px;
-  padding:18px 44px;font-family:var(--font);font-weight:800;font-size:26px;cursor:pointer}
+  padding:16px 40px;font-family:var(--font);font-weight:800;font-size:24px;cursor:pointer}
 .big:active{transform:translateY(4px);border-bottom-width:3px}
 .ghost{background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.4);color:#fff;
-  border-radius:999px;padding:11px 26px;font-family:var(--font);font-weight:800;font-size:17px;cursor:pointer}
-.book{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:100%;max-width:400px;
-  max-height:56vh;overflow-y:auto;padding:4px}
+  border-radius:999px;padding:10px 24px;font-family:var(--font);font-weight:800;font-size:16px;cursor:pointer}
+.book{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;width:100%;max-width:390px;
+  max-height:52vh;overflow-y:auto;padding:4px}
 .card{background:rgba(255,255,255,.14);border:2px solid rgba(255,255,255,.28);border-radius:16px;
-  padding:8px 2px;font-size:28px}
+  padding:8px 2px;font-size:26px}
 .card small{display:block;font-size:11px;font-weight:700;margin-top:3px}
 .card.locked{opacity:.32;filter:grayscale(1)}
-.newfish{font-size:78px;animation:hop .6s ease infinite}
+.newfish{font-size:74px;animation:hop .6s ease infinite}
 
-/* confetti */
+/* おうちのかた */
+.panel{width:100%;max-width:380px;text-align:left;display:flex;flex-direction:column;gap:12px}
+.row2{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:rgba(255,255,255,.10);border:2px solid rgba(255,255,255,.22);
+  border-radius:16px;padding:10px 14px;font-size:15px;font-weight:800}
+.row2 select,.row2 input[type=range]{font-family:var(--font);font-weight:800;font-size:15px}
+.row2 select{border-radius:10px;padding:5px 8px;border:none;background:var(--pearl);color:var(--ink)}
+.note{font-size:13px;opacity:.8;line-height:1.7;margin:0}
+
 #party{position:fixed;inset:0;pointer-events:none;z-index:8;overflow:hidden}
-.conf{position:absolute;font-size:26px;animation:fall 1.5s ease-in forwards}
+.conf{position:absolute;font-size:24px;animation:fall 1.5s ease-in forwards}
 @keyframes fall{0%{transform:translateY(-10vh) rotate(0);opacity:1}
 100%{transform:translateY(105vh) rotate(540deg);opacity:0}}
 
+/* ══════ 2年生モード ══════ */
+.modebtns{display:flex;flex-direction:column;gap:9px;width:100%;max-width:340px}
+.modebtn{background:var(--coral);color:#fff;border:none;border-bottom:6px solid #c9482c;
+  border-radius:20px;padding:10px 16px;font-family:var(--font);font-weight:800;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.25}
+.modebtn.m-g1{background:#2f7fd0;border-bottom-color:#1c5794}
+.modebtn.m-g2{background:#7b6ce0;border-bottom-color:#5548a8}
+.modebtn:active{transform:translateY(4px);border-bottom-width:2px}
+.modebtn .t{font-size:21px}
+.modebtn .d{font-size:11.5px;font-weight:700;opacity:.93}
+/* モードごとの海の色 */
+body.t1{background:linear-gradient(180deg,#0b2f6b 0%,#2a68bd 45%,#6fb8ea 100%)}
+body.t2{background:linear-gradient(180deg,#0c2a55 0%,#2b5ea8 45%,#5aa8d8 100%)}
+
+/* 10のへや（1年生） */
+.tenwrap{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.tf{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;padding:7px;
+  background:rgba(255,255,255,.14);border:3px solid rgba(255,255,255,.55);border-radius:14px}
+.tf i{width:clamp(16px,4.6vw,24px);height:clamp(16px,4.6vw,24px);border-radius:50%;
+  background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)}
+.tf i.a{background:#ffd166;box-shadow:none}
+.tf i.b{background:#ff7a59;box-shadow:none}
+.tf i.g{background:rgba(255,209,102,.25);box-shadow:inset 0 0 0 3px rgba(255,255,255,.5)}
+/* 10のたば（1年生・大きいかず） */
+.bund{display:flex;gap:8px;align-items:flex-end;justify-content:center;flex-wrap:wrap;
+  background:rgba(3,45,78,.25);border-radius:18px;padding:12px}
+.bund .bar{width:16px;height:96px;border-radius:5px;background:linear-gradient(180deg,#ffd166,#ff9f43);
+  box-shadow:inset 0 0 0 2px rgba(0,40,70,.35);
+  background-image:repeating-linear-gradient(180deg,rgba(0,40,70,.35) 0 2px,transparent 2px 9.6px)}
+.bund .ones{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-left:6px}
+.bund .ones i{width:14px;height:9.6px;border-radius:3px;background:#3fc8d8;
+  box-shadow:inset 0 0 0 1.5px rgba(0,40,70,.35)}
+
+/* 筆算 */
+.hissan{display:grid;grid-template-columns:34px repeat(3,44px);justify-content:center;
+  background:rgba(255,255,255,.93);color:var(--ink);border-radius:18px;padding:12px 14px 14px;
+  width:fit-content;margin:0 auto;font-size:34px;font-weight:800;line-height:1.15}
+.hissan span{text-align:center}
+.hissan .op{color:var(--coral)}
+.hissan .line{grid-column:1/-1;height:5px;background:var(--ink);border-radius:3px;margin:6px 0 8px}
+.hissan .q{color:#c04a2c}
+.hissan .blank{color:#b9c8d4}
+
+/* 九九 */
+.mularray{display:flex;flex-direction:column;gap:5px;align-items:center;
+  background:rgba(3,45,78,.30);border:3px solid rgba(255,255,255,.3);border-radius:20px;
+  padding:10px 12px;width:fit-content;margin:0 auto;max-width:100%;max-height:36vh;overflow:auto}
+.mularray.small .mrow span{font-size:clamp(12px,3.6vw,18px)}
+.mularray .mrow{display:flex;gap:4px}
+.mularray .mrow span{font-size:clamp(15px,4.6vw,24px);line-height:1}
+.bigexpr{text-align:center;font-size:clamp(30px,9vw,44px);font-weight:800;letter-spacing:2px;
+  text-shadow:0 4px 0 rgba(0,60,90,.35)}
+
+/* 時計 */
+.clockwrap{display:flex;justify-content:center}
+.clockwrap svg{width:min(60vw,210px);height:auto;filter:drop-shadow(0 6px 12px rgba(0,30,60,.35))}
+
+/* 長さ・かさ */
+.unitvis{display:flex;justify-content:center}
+.unitvis svg{width:min(88vw,400px);height:auto}
+.unitnote{text-align:center;font-size:15px;font-weight:800;color:var(--foam)}
+.ans .u{font-size:14px;font-weight:800;opacity:.75}
+.ans.txt .n{font-size:clamp(20px,6.2vw,28px)}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-@media (max-height:640px){.marin{width:74px;height:74px}.tray{min-height:62px}}
+@media (max-height:660px){.marin{width:62px;height:62px}.speech{font-size:15px}}
 </style>
 </head>
 <body>
 <div id="bubbles"></div>
 <div id="party"></div>
 
-<!-- ========== START ========== -->
+<!-- START -->
 <div class="screen show" id="startScreen">
   <div class="marin"><div class="drop"></div><div class="body"></div>
     <div class="fin l"></div><div class="fin r"></div>
     <div class="eye l"></div><div class="eye r"></div>
     <div class="cheek l"></div><div class="cheek r"></div><div class="mouth"></div></div>
   <h1>うみのさんすう</h1>
-  <p class="sub">マリンと いっしょに<br>かず で あそぼう！</p>
-  <button class="big" id="startBtn">はじめる</button>
-  <button class="ghost" id="resetBtn">さいしょから</button>
+  <p class="sub">どれで あそぶ？</p>
+  <div class="modebtns" id="modeBtns"></div>
+  <button class="ghost" id="parentBtn">おうちのかた へ</button>
 </div>
 
-<!-- ========== GAME ========== -->
+<!-- GAME -->
 <div class="wrap" id="game" style="visibility:hidden">
   <div class="top">
     <span class="badge" id="stageBadge">ステージ 1</span>
     <span class="badge stars" id="starBadge">⭐ 0</span>
     <button class="iconbtn" id="soundBtn" aria-label="こえの おんおふ">🔊</button>
     <button class="iconbtn" id="bookBtn" aria-label="さかなずかん">📖</button>
+    <button class="iconbtn" id="gearBtn" aria-label="おうちのかた">⚙️</button>
   </div>
   <div class="dots" id="dots"></div>
   <div class="stagename" id="stageName"></div>
 
   <div class="q">
     <div class="qtitle" id="qTitle">…</div>
-    <div class="tray" id="qTray"></div>
+    <div class="expr" id="qExpr"></div>
+    <div id="qTray"></div>
+    <div class="caption" id="caption"></div>
+    <button class="replay" id="replayBtn" hidden>▶ もういちど みる</button>
   </div>
 
   <div class="marin" id="marin"><div class="drop"></div><div class="body"></div>
@@ -187,11 +289,10 @@ h1{font-size:clamp(30px,10vw,46px);margin:0;font-weight:800;text-shadow:0 4px 0 
     <div class="eye l"></div><div class="eye r"></div>
     <div class="cheek l"></div><div class="cheek r"></div><div class="mouth"></div></div>
   <div class="speech" id="speech">こたえを タッチしてね</div>
-
   <div class="answers" id="answers"></div>
 </div>
 
-<!-- ========== LEVEL UP ========== -->
+<!-- LEVEL UP -->
 <div class="screen" id="levelScreen">
   <h1 id="luTitle">やったね！</h1>
   <div class="newfish" id="luFish">🐠</div>
@@ -199,7 +300,7 @@ h1{font-size:clamp(30px,10vw,46px);margin:0;font-weight:800;text-shadow:0 4px 0 
   <button class="big" id="luBtn">つぎへ</button>
 </div>
 
-<!-- ========== FISH BOOK ========== -->
+<!-- BOOK -->
 <div class="screen" id="bookScreen">
   <h1>さかなずかん</h1>
   <p class="sub" id="bookCount"></p>
@@ -207,217 +308,1081 @@ h1{font-size:clamp(30px,10vw,46px);margin:0;font-weight:800;text-shadow:0 4px 0 
   <button class="big" id="bookClose">もどる</button>
 </div>
 
+<!-- PARENT -->
+<div class="screen" id="parentScreen">
+  <h1 style="font-size:28px">おうちのかたへ</h1>
+  <div class="panel">
+    <div class="row2"><span>モード</span>
+      <select id="pMode"></select></div>
+    <div class="row2"><span>こえ（読み上げ）</span>
+      <select id="pVoice"><option value="1">つかう</option><option value="0">つかわない</option></select></div>
+    <div class="row2"><span>よむ はやさ</span>
+      <select id="pRate"><option value="0.7">とても ゆっくり</option><option value="0.85" selected>ゆっくり</option><option value="1">ふつう</option></select></div>
+    <div class="row2"><span>ステージ</span><select id="pStage"></select></div>
+    <div class="row2"><span>こうかおん</span>
+      <select id="pSfx"><option value="1">つかう</option><option value="0">つかわない</option></select></div>
+    <p class="note" id="voiceNote"></p>
+    <p class="note">【幼児】「1つずつ数えて、最後に言った数が全体の数」という数の基礎から、5と10の合成分解、10までのたし算ひき算まで（全11ステージ）。</p>
+    <p class="note">【1年生】20までのたし算ひき算（くり上がり・くり下がりは「10のへや」で可視化）、3つの数の計算、10のたばで考える100までの数、何時・何時半の時計。</p>
+    <p class="note">【2年生】2桁の筆算、九九、何時何分と時間の計算、長さ mm/cm/m、かさ mL/dL/L。</p>
+    <p class="note">ほめ言葉に学年は出てこないので、就学前のお子さんが1年生・2年生モードで先取りしても違和感なく遊べます。誤答の選択肢は「くり上がり忘れ」「引けないので上下ひっくり返す」「単位の桁ちがい」など、つまずきやすい間違いを混ぜてあります。読み上げは全モード初期状態オンで、問題文・式・答え・ほめ言葉を読みます。進み具合とずかんはモードごとに別々に保存されます。</p>
+    <p class="note">まちがえても減点はなく、2回まちがえると正解が光ります。</p>
+  </div>
+  <button class="ghost" id="pReset">さいしょから やりなおす</button>
+  <button class="big" id="pClose">とじる</button>
+</div>
+
 <script>
 "use strict";
-/* ───────── data ───────── */
-const FISH = [
- ["🐟","いわし"],["🐠","くまのみ"],["🐡","ふぐ"],["🦐","えび"],["🦀","かに"],
- ["🐙","たこ"],["🦑","いか"],["🪼","くらげ"],["🐢","うみがめ"],["🦈","さめ"],
- ["🐬","いるか"],["🦭","あざらし"],["🐳","くじら"],["🐋","しろながす"],["🪸","さんご"],["🐚","かい"]
-];
-const SWIM = ["🐟","🐠","🐡","🦐","🦀","🐙","🦑","🪼"];
-const YAY = ["すごい！","やったね！","てんさい！","ぴったり！","かんぺき！","さすが！","だいせいかい！"];
-const CHEER = ["だいじょうぶ！","おしいっ！","もういっかい！","いっしょに かぞえよう！","つぎは できるよ！"];
+/* ═══════════ データ ═══════════ */
+/* ずかん：モードごとに べつの 生きもの（ひらがな→カタカナへ だんだん むずかしく） */
+const FISH_YOJI=[["🐟","いわし"],["🐠","くまのみ"],["🦐","えび"],["🦀","かに"],["🐡","ふぐ"],
+  ["🐙","たこ"],["🦑","いか"],["🪼","くらげ"],["🐚","まきがい"],["🐢","うみがめ"],
+  ["🐬","いるか"],["🦈","さめ"],["🐳","くじら"]];
+const FISH_G1=[["🐚","サザエ"],["🦀","ズワイガニ"],["🦐","クルマエビ"],["🐟","マイワシ"],
+  ["🐠","カクレクマノミ"],["🐙","マダコ"],["🦑","スルメイカ"],["🪼","エチゼンクラゲ"],
+  ["🐢","アカウミガメ"],["🐬","バンドウイルカ"],["🦈","ホホジロザメ"],["🐳","マッコウクジラ"]];
+const FISH_G2=[["🐚","オウムガイ"],["🪸","サンゴ"],["🦞","ロブスター"],["🦀","タカアシガニ"],
+  ["🐡","ハリセンボン"],["🦑","ダイオウイカ"],["🪼","ミズクラゲ"],["🐢","アオウミガメ"],
+  ["🦭","アザラシ"],["🦦","ラッコ"],["🐋","シロナガスクジラ"],["🦈","ジンベエザメ"]];
+const SWIM=["🐟","🐠","🐡","🦐","🦀","🐙","🦑","🪼"];
+const YAY=["すごい！","やったね！","てんさい！","ぴったり！","かんぺき！","さすが！"];
+const YAYSAY=["すごい","やったね","てんさい","ぴったり","かんぺき","さすが"];
+const CHEER=["だいじょうぶ！","おしいっ！","もういっかい！","いっしょに かぞえよう！"];
+const CHEERSAY=["だいじょうぶ","おしい","もう いっかい","いっしょに かぞえよう"];
+/* すこし おにいさん・おねえさん あつかいの ほめ言葉（学年は 言わない） */
+const YAY_S=["せいかい！","かんぺき！","さすが！","よく できました！","バッチリ！","おみごと！","その ちょうし！"];
+const YAYSAY_S=["せいかい","かんぺき","さすが","よく できました","ばっちり","おみごと","その ちょうし"];
+const CHEER_S=["おしい！","もう いちど かんがえてみよう","あと すこし！","ゆっくりで だいじょうぶ"];
+const CHEERSAY_S=["おしい","もう いちど かんがえて みよう","あと すこし","ゆっくりで だいじょうぶ"];
 
-const STAGES = [
- {name:"かぞえよう 1〜5",       gen:()=>count(1,5)},
- {name:"かぞえよう 1〜10",      gen:()=>count(1,10)},
- {name:"どっちが おおい？",     gen:()=>compare()},
- {name:"たしざん 5まで",        gen:()=>add(1,4,5,true)},
- {name:"たしざん 10まで",       gen:()=>add(1,9,10,true)},
- {name:"ひきざん 10まで",       gen:()=>sub(10,true)},
- {name:"くりあがりの たしざん", gen:()=>add(3,9,18,false,11)},
- {name:"くりさがりの ひきざん", gen:()=>sub(18,false,11)},
- {name:"2けたの たしざん・ひきざん", gen:()=>twoDigit()},
- {name:"かけざん（2〜9のだん）", gen:()=>mul()}
-];
-const NEED = 6;                       // ステージ合格に必要な せいかい数
-const state = {stage:0, ok:0, stars:0, fish:0, sound:true, q:null, tries:0};
+/* ═══════════ 日本語よみ（数字→かな） ═══════════
+   算用数字のまま読み上げると端末によって英語音声で「ツー」になるため、
+   読み上げ文字列は必ずここで かな に変換する。 */
+const ONES=["","いち","に","さん","よん","ご","ろく","なな","はち","きゅう"];
+function numKana(n){
+  n=Number(n);
+  if(!isFinite(n))return "";
+  if(n===0)return "ゼロ";
+  if(n<10)return ONES[n];
+  if(n===10)return "じゅう";
+  if(n<20)return "じゅう"+ONES[n-10];
+  if(n<100){const t=Math.floor(n/10),o=n%10;
+    return ONES[t]+"じゅう"+(o?ONES[o]:"");}
+  return String(n);
+}
+/* 助数詞「ひき」の音便：1いっぴき 3さんびき 6ろっぴき 8はっぴき 10じゅっぴき */
+const HIKI={1:"いっぴき",2:"にひき",3:"さんびき",4:"よんひき",5:"ごひき",
+  6:"ろっぴき",7:"ななひき",8:"はっぴき",9:"きゅうひき",10:"じゅっぴき"};
+const hiki=n=>HIKI[n]||(numKana(n)+"ひき");
+/* 画面表示用の助数詞。「10ひき」ではなく「10ぴき」と正しく書く */
+const HIKI_T={1:"ぴき",2:"ひき",3:"びき",4:"ひき",5:"ひき",6:"ぴき",7:"ひき",8:"ぴき",9:"ひき",10:"ぴき"};
+const hikiT=n=>n+(HIKI_T[n]||"ひき");
+/* 保険：文字列に残った数字も かな に置換 */
+const kanaize=s=>String(s).replace(/\d+/g,m=>numKana(m));
 
-/* ───────── helpers ───────── */
+/* ═══════════ ステージ：幼児 ═══════════ */
+const STAGES_YOJI=[
+ {name:"かぞえよう 1〜5",        gen:()=>qCount(1,5)},
+ {name:"かぞえよう 1〜10",       gen:()=>qCount(4,10)},
+ {name:"どっちが おおい？",      gen:()=>qCompare()},
+ {name:"すうじと なかよし",      gen:()=>qNumeral()},
+ {name:"5の なかま",            gen:()=>qMake(5)},
+ {name:"たしざん 5まで",         gen:()=>qAdd(5)},
+ {name:"ひきざん 5まで",         gen:()=>qSub(5)},
+ {name:"10の なかま",           gen:()=>qMake(10)},
+ {name:"たしざん 10まで",        gen:()=>qAdd(10)},
+ {name:"ひきざん 10まで",        gen:()=>qSub(10)},
+ {name:"うみの チャンピオン",    gen:()=>MIX_YOJI[R(0,MIX_YOJI.length-1)]()}
+];
+const MIX_YOJI=[()=>qCount(4,10),()=>qNumeral(),()=>qMake(5),()=>qMake(10),
+  ()=>qAdd(5),()=>qAdd(10),()=>qSub(5),()=>qSub(10)];
+
+/* ═══════════ ステージ：1年生 ═══════════ */
+const STAGES_G1=[
+ {name:"10の なかま",                 gen:()=>qMake(10)},
+ {name:"たしざん 20まで（くり上がりなし）", gen:()=>qAddG1(false)},
+ {name:"ひきざん 20まで（くり下がりなし）", gen:()=>qSubG1(false)},
+ {name:"くり上がりの たしざん",        gen:()=>qAddG1(true)},
+ {name:"くり下がりの ひきざん",        gen:()=>qSubG1(true)},
+ {name:"3つの かずの けいさん",        gen:()=>qThree()},
+ {name:"大きい かず（100まで）",       gen:()=>qTen()},
+ {name:"とけい 何時・何時半",          gen:()=>qClock1()},
+ {name:"うみの チャンピオン",          gen:()=>MIX_G1[R(0,MIX_G1.length-1)]()}
+];
+const MIX_G1=[()=>qAddG1(true),()=>qSubG1(true),()=>qAddG1(false),()=>qSubG1(false),
+  ()=>qThree(),()=>qTen(),()=>qClock1()];
+
+/* ═══════════ ステージ：2年生 ═══════════ */
+const STAGES_G2=[
+ {name:"ひっ算 たし算（くり上がりなし）", gen:()=>qColAdd(false)},
+ {name:"ひっ算 たし算（くり上がり）",     gen:()=>qColAdd(true)},
+ {name:"ひっ算 ひき算（くり下がりなし）", gen:()=>qColSub(false)},
+ {name:"ひっ算 ひき算（くり下がり）",     gen:()=>qColSub(true)},
+ {name:"九九 2・5のだん",   gen:()=>qMul([2,5])},
+ {name:"九九 3・4のだん",   gen:()=>qMul([3,4])},
+ {name:"九九 6〜9のだん",   gen:()=>qMul([6,7,8,9])},
+ {name:"九九 ぜんぶのだん", gen:()=>qMul([2,3,4,5,6,7,8,9])},
+ {name:"時計 何時何分",     gen:()=>qClockRead()},
+ {name:"時計 時間の計算",   gen:()=>qClockCalc()},
+ {name:"長さ mm・cm・m",    gen:()=>qLength()},
+ {name:"かさ mL・dL・L",     gen:()=>qVolume()},
+ {name:"海のチャンピオン",  gen:()=>MIX_G2[R(0,MIX_G2.length-1)]()}
+];
+const MIX_G2=[()=>qColAdd(true),()=>qColSub(true),()=>qMul([2,3,4,5,6,7,8,9]),
+  ()=>qClockRead(),()=>qClockCalc(),()=>qLength(),()=>qVolume()];
+
+const NEED=5;
+
+/* ═══════════ モード（ようじ／1年生／2年生） ═══════════ */
+const MODES={
+ yoji:{id:"yoji",label:"ようじ", plabel:"幼児（4〜6さい）", icon:"🐟",
+     sub:"かぞえる・10までの たしざん ひきざん",
+     key:"umi-sansu-y4", theme:"", rate:.85, school:false,
+     stages:STAGES_YOJI, fish:FISH_YOJI},
+ g1:{id:"g1",label:"1年生", plabel:"1年生", icon:"🐬",
+     sub:"くり上がり・くり下がり・大きいかず・とけい",
+     key:"umi-sansu-g1", theme:"t1", rate:.95, school:true,
+     stages:STAGES_G1, fish:FISH_G1},
+ g2:{id:"g2",label:"2年生", plabel:"2年生", icon:"🦈",
+     sub:"ひっ算・九九・時計・長さとかさ",
+     key:"umi-sansu-g2-v1", theme:"t2", rate:1, school:true,
+     stages:STAGES_G2, fish:FISH_G2}
+};
+const MODE_ORDER=["yoji","g1","g2"];
+
+const state={mode:"yoji",stage:0,ok:0,stars:0,fish:0,miss:0,q:null,tries:0,
+  sound:true,sfx:true,rate:.85,gen:0,counting:0};
+const M=()=>MODES[state.mode]||MODES.yoji;
+const isSchool=()=>M().school;          /* 1年生・2年生（漢字ありの言いまわし） */
+const isG2=()=>state.mode==="g2";
+const STAGE_LIST=()=>M().stages;
+const FISH_LIST=()=>M().fish;
+const curStage=()=>STAGE_LIST()[Math.min(state.stage,STAGE_LIST().length-1)];
+
+/* ═══════════ ヘルパ ═══════════ */
 const $=id=>document.getElementById(id);
 const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
-const shuffle=a=>a.sort(()=>Math.random()-.5);
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
 const pickFish=()=>SWIM[R(0,SWIM.length-1)];
-/* 5こで かいぎょう */
-function grp(n,e,gone){
-  const col=Math.min(n,5);
-  let s=`<span class="grp" style="grid-template-columns:repeat(${col},auto)">`;
-  for(let i=0;i<n;i++){const off=gone&&i>=n-gone;
-    s+=`<span class="fish${off?" gone":""}">${e}</span>`;}
-  return s+"</span>";}
-/* ひきざん：ぜんぶ ならべて、へる ぶんに ✖ */
-function subVis(a,b,e){
-  return grp(a,e,b)+`<div class="caption">${b}ひき バイバイ 👋 のこりは？</div>`;}
-/* かけざん：t ひき の グループが b こ */
-function mulVis(t,b,e){
-  const p=t*b,size=p>36?"sm":(p>20?"md":"");
-  let s=`<div class="rows ${size}">`;
-  for(let i=0;i<b;i++){s+='<div class="row">';
-    for(let j=0;j<t;j++)s+=`<span class="fish">${e}</span>`;s+="</div>";}
-  return s+`</div><div class="caption">${t}ひき の グループが ${b}こ</div>`;}
-function opts(ans,lo,hi){const s=new Set([ans]);let g=0;
-  while(s.size<4&&g++<80){let v=ans+R(-3,3);if(v>=lo&&v<=hi)s.add(v);}
-  while(s.size<4)s.add(R(lo,hi));
-  return shuffle([...s]).map(v=>({html:String(v),val:v}));}
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const REDUCED=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+const ms=n=>REDUCED?Math.min(n,120):n;
 
-/* ───────── question makers ───────── */
-function count(lo,hi){const n=R(lo,hi),e=pickFish();
-  return{title:"なんびき いるかな？",say:`${e==="🪼"?"くらげ":"おさかな"}は なんびき いるかな`,
-    tray:grp(n,e),ans:n,options:opts(n,1,Math.max(hi,n+2)),hint:grp(n,e)};}
-function compare(){let a=R(1,9),b=R(1,9);while(a===b)b=R(1,9);
+/* すいそう（フレーム）をつくる。cap は 5 か 10 */
+function makeTank(cap){
+  const t=document.createElement("div");
+  t.className="tank";
+  t.style.gridTemplateColumns="repeat(5,minmax(0,1fr))";
+  t.style.maxWidth=(cap<=5?"250px":"400px");
+  for(let i=0;i<cap;i++){const s=document.createElement("div");s.className="slot";t.appendChild(s);}
+  return t;
+}
+function putFish(slot,emoji,cls){
+  slot.classList.add("has");
+  const f=document.createElement("span");
+  f.className="f"+(cls?" "+cls:"");
+  f.textContent=emoji;
+  slot.appendChild(f);
+  if(cls==="arrive")setTimeout(()=>f.classList.remove("arrive"),520);
+  return f;
+}
+/* 選択肢：数字＋ドット（数字がまだ読めなくても量で選べる） */
+function optNums(ans,lo,hi,n){
+  const set=new Set([ans]);let g=0;
+  while(set.size<n&&g++<200){const v=ans+R(-3,3);if(v>=lo&&v<=hi)set.add(v);}
+  while(set.size<n&&g++<400)set.add(R(lo,hi));
+  return shuffle([...set]).map(v=>({val:v,html:numCard(v)}));
+}
+function numCard(v){
+  let pips="";for(let i=0;i<v;i++)pips+='<span class="pip"></span>';
+  return `<span class="n">${v}</span><span class="pips">${pips}</span>`;
+}
+function grpHTML(n,e){
+  let s='<span class="grpwrap">';
+  for(let i=0;i<n;i++)s+=`<span>${e}</span>`;
+  return s+"</span>";
+}
+
+/* ═══════════ 問題ジェネレータ ═══════════ */
+/* ① かぞえる：1匹ずつタップして数える（一対一対応と基数性） */
+function qCount(lo,hi){
+  const n=R(lo,hi),e=pickFish();
+  return{
+    title:"なんびき いるかな？",
+    say:"おさかなを ひとつずつ タッチして かぞえてね",
+    caption:"さかなを タッチすると かぞえられるよ",
+    ans:n, ansSay:`ぜんぶで ${hiki(n)}`,
+    options:optNums(n,1,Math.max(hi,n+2),4), replay:false,
+    build(tray){
+      state.counting=0;
+      const box=document.createElement("div");box.className="loose";
+      const order=[];
+      for(let i=0;i<n;i++){
+        const c=document.createElement("div");c.className="cell";
+        const f=document.createElement("span");f.className="f";f.textContent=e;
+        c.appendChild(f);box.appendChild(c);order.push(c);
+      }
+      box.onclick=ev=>{
+        const c=ev.target.closest(".cell");
+        if(!c||c.classList.contains("done"))return;
+        state.counting++;
+        c.classList.add("done");
+        c.querySelector(".f").classList.add("tapped");
+        const tag=document.createElement("span");
+        tag.className="numtag";tag.textContent=state.counting;
+        c.appendChild(tag);
+        blip(520+state.counting*45);
+        if(state.counting>=n){
+          say(`ぜんぶで ${hiki(n)}`);
+          setCaption(`ぜんぶで ${hikiT(n)}！`);
+        }else{
+          say(numKana(state.counting));
+        }
+      };
+      tray.appendChild(box);
+    }
+  };
+}
+/* ② くらべる */
+function qCompare(){
+  let a=R(1,9),b=R(1,9);while(a===b)b=R(1,9);
   const e1=pickFish();let e2=pickFish();
-  return{title:"どっちが おおい？",say:"どっちが おおいかな",
-    tray:'<span style="font-size:20px;font-weight:800">えらんでね</span>',ans:a>b?"A":"B",
-    options:shuffle([{html:grp(a,e1),val:"A"},{html:grp(b,e2),val:"B"}]),
-    hint:grp(a,e1)+'<span class="op">と</span>'+grp(b,e2)};}
-function add(lo,hi,max,vis,min){let a,b,s,g=0;
-  do{a=R(lo,hi);b=R(lo,hi);s=a+b;}while((s>max||(min&&s<min))&&g++<200);
-  const e=pickFish();
-  return{title:`${a} + ${b} = ?`,say:`${a} たす ${b} は？`,
-    tray:vis?grp(a,e)+'<span class="op">+</span>'+grp(b,e):`<span class="bignum">${a} + ${b}</span>`,
-    ans:s,options:opts(s,1,max+2),hint:grp(s,e)};}
-function sub(max,vis,min){let a,b,d,g=0;
-  do{a=R(min?min:2,max);b=R(1,a-1);d=a-b;}while(d<1&&g++<200);
-  const e=pickFish();
-  return{title:`${a} − ${b} = ?`,say:`${a}ひき から ${b}ひき いなくなると？`,
-    tray:vis?subVis(a,b,e):`<span class="bignum">${a} − ${b}</span>`,
-    ans:d,options:opts(d,0,max),
-    hint:subVis(a,b,e).replace("のこりは？","のこりを かぞえよう！")};}
-function twoDigit(){const plus=Math.random()<.5;
-  if(plus){const a=R(11,60),b=R(11,39-(a%10>4?10:0));const s=a+b;
-    return{title:`${a} + ${b} = ?`,say:`${a} たす ${b} は？`,
-      tray:`<span class="bignum">${a} + ${b}</span>`,ans:s,options:opts(s,10,99),
-      hint:`<span style="font-size:18px;font-weight:800">10のくらい ${Math.floor(a/10)}+${Math.floor(b/10)}、1のくらい ${a%10}+${b%10}</span>`};}
-  const a=R(30,99),b=R(11,a-10);const d=a-b;
-  return{title:`${a} − ${b} = ?`,say:`${a} ひく ${b} は？`,
-    tray:`<span class="bignum">${a} − ${b}</span>`,ans:d,options:opts(d,0,99),
-    hint:`<span style="font-size:18px;font-weight:800">まず ${a} から ${Math.floor(b/10)*10} を ひこう</span>`};}
-function mul(){const t=R(2,9),b=R(1,9),p=t*b,e=pickFish();
-  return{title:`${t} × ${b} = ?`,say:`${t} かける ${b} は？`,
-    tray:mulVis(t,b,e),ans:p,options:opts(p,1,81),
-    hint:mulVis(t,b,e)+`<div class="caption">${t}を ${b}かい たすと…</div>`};}
+  return{
+    title:"どっちが おおい？",
+    say:"どっちが おおいかな",
+    caption:"おおい ほうを タッチしてね",
+    ans:a>b?"A":"B", ansSay:"こっちが おおいね", replay:false,
+    options:shuffle([{val:"A",html:grpHTML(a,e1)},{val:"B",html:grpHTML(b,e2)}]),
+    build(tray){
+      const w=document.createElement("div");
+      w.style.cssText="text-align:center;font-size:34px";
+      w.textContent="🤔";
+      tray.appendChild(w);
+    }
+  };
+}
+/* ③ 数字と量の対応：大きな数字 → 同じ数の魚をえらぶ */
+function qNumeral(){
+  const n=R(1,10),e=pickFish();
+  return{
+    title:"おなじ かずは どれ？",
+    say:`すうじの ${numKana(n)}。おなじ かずの おさかなは どれかな`,
+    caption:`「${n}」と おなじ かず`,
+    ans:n, ansSay:`これが ${numKana(n)}。${hiki(n)} だね`, replay:false,
+    options:(()=>{
+      const set=new Set([n]);let g=0;
+      while(set.size<4&&g++<200){const v=n+R(-3,3);if(v>=1&&v<=12)set.add(v);}
+      return shuffle([...set]).map(v=>({val:v,html:grpHTML(v,e)}));
+    })(),
+    build(tray){
+      const w=document.createElement("div");
+      w.className="hugenum";w.textContent=n;
+      tray.appendChild(w);
+    }
+  };
+}
+/* ④ 合成分解：あと なんびき で 5／10 になる？（くり上がりの土台） */
+function qMake(target){
+  const k=R(1,target-1),e=pickFish();
+  return{
+    title:`あと なんびき で ${target}に なる？`,
+    expr:`${k} + ? = ${target}`, exprDone:`${k} + ${target-k} = ${target}`,
+    exprSay:`${numKana(k)} たす いくつで ${numKana(target)}？`,
+    exprAns:`${numKana(k)} たす ${numKana(target-k)} で ${numKana(target)}`, ansSay:`${numKana(k)} たす ${numKana(target-k)} で ${numKana(target)}`,
+    say:`いま ${hiki(k)}。${numKana(k)} たす いくつで ${numKana(target)}に なるかな`,
+    caption:`いま ${hikiT(k)}。あいてる ところは いくつ？`,
+    ans:target-k, replay:false,
+    options:optNums(target-k,1,target,4),
+    build(tray){
+      const t=makeTank(target);
+      const slots=[...t.children];
+      slots.forEach((s,i)=>{ if(i<k) putFish(s,e); else s.classList.add("wait"); });
+      tray.appendChild(t);
+      const my=state.gen;
+      setTimeout(()=>{ if(my===state.gen)flashExpr(); },ms(1500));
+    }
+  };
+}
+/* ⑤ たしざん：魚が1匹ずつ「およいで やってくる」 */
+function qAdd(max){
+  const a=R(1,max-1), b=R(1,max-a), e=pickFish();
+  const kA=numKana(a),kB=numKana(b),kS=numKana(a+b);
+  return{
+    title:`さかなが ${hikiT(a)}。\nそこへ ${hikiT(b)} やってきたよ`,
+    expr:`${a} + ${b} = ?`, exprDone:`${a} + ${b} = ${a+b}`,
+    exprSay:`${kA} たす ${kB} は？`, exprAns:`${kA} たす ${kB} は ${kS}`, ansSay:`${kA} たす ${kB} は ${kS}`,
+    say:`さかなが ${hiki(a)}。そこへ ${hiki(b)} やってきます`,
+    caption:"", ans:a+b, replay:true,
+    options:optNums(a+b,1,max+2,4),
+    build:async tray=>{
+      const my=state.gen;
+      const t=makeTank(max<=5?5:10), slots=[...t.children];
+      tray.appendChild(t);
+      for(let i=0;i<a;i++)putFish(slots[i],e);
+      for(let i=a;i<a+b;i++)slots[i].classList.add("wait");
+      setCaption(`さかなが ${hikiT(a)}`);
+      await sleep(ms(950)); if(my!==state.gen)return;
+      for(let i=0;i<b;i++){
+        slots[a+i].classList.remove("wait");
+        putFish(slots[a+i],e,"arrive");
+        blip(620+i*70);
+        setCaption(`${hikiT(a)} と ${hikiT(i+1)}`);
+        await sleep(ms(600)); if(my!==state.gen)return;
+      }
+      for(let i=0;i<a+b;i++)slots[i].classList.add("stay");
+      setCaption("ぜんぶで なんびき？");
+      say("ぜんぶで なんびきかな",true);
+      flashExpr(`${kA} たす ${kB} は？`);
+    }
+  };
+}
+/* ⑥ ひきざん：魚が1匹ずつ「およいで いなくなる」。
+      いなくなった席は あいた まま 残るので「へった」ことが目で見える。
+      赤い✖は「まちがい」の合図に見えるので いっさい使わない。 */
+function qSub(max){
+  const a=R(2,max), b=R(1,a-1), e=pickFish();
+  const kA=numKana(a),kB=numKana(b),kD=numKana(a-b);
+  return{
+    title:`さかなが ${hikiT(a)}。\n${hikiT(b)} およいで いっちゃった`,
+    expr:`${a} − ${b} = ?`, exprDone:`${a} − ${b} = ${a-b}`,
+    exprSay:`${kA} ひく ${kB} は？`, exprAns:`${kA} ひく ${kB} は ${kD}`, ansSay:`${kA} ひく ${kB} は ${kD}`,
+    say:`さかなが ${hiki(a)}。${hiki(b)} およいで いきます`,
+    caption:"", ans:a-b, replay:true,
+    options:optNums(a-b,0,max,4),
+    build:async tray=>{
+      const my=state.gen;
+      const t=makeTank(max<=5?5:10), slots=[...t.children];
+      tray.appendChild(t);
+      const fishes=[];
+      for(let i=0;i<a;i++)fishes.push(putFish(slots[i],e));
+      setCaption(`さかなが ${hikiT(a)}`);
+      await sleep(ms(950)); if(my!==state.gen)return;
+      for(let i=0;i<b;i++){
+        const idx=a-1-i, f=fishes[idx];
+        f.classList.add("away");
+        swoosh();
+        setCaption(`${hikiT(i+1)} バイバイ 👋`);
+        await sleep(ms(600)); if(my!==state.gen)return;
+        f.remove();
+        slots[idx].classList.remove("has");
+        slots[idx].classList.add("empty");
+      }
+      for(let i=0;i<a-b;i++)slots[i].classList.add("stay");
+      setCaption("のこりを かぞえよう！");
+      say("のこりは なんびきかな",true);
+      flashExpr(`${kA} ひく ${kB} は？`);
+    }
+  };
+}
 
-/* ───────── audio ───────── */
+/* ═══════════════════════════════════════════
+   1年生モード
+   ═══════════════════════════════════════════ */
+/* 10のまとまりが 目で見える「10のへや」 */
+function tenFrame(a,b,kind){
+  let h='<div class="tenwrap">';
+  for(let f=0;f<2;f++){
+    h+='<div class="tf">';
+    for(let i=0;i<10;i++){
+      const idx=f*10+i;
+      let c="";
+      if(kind==="sub") c = idx<a-b?"a" : (idx<a?"a g":"");
+      else             c = idx<a?"a"   : (idx<a+b?"b":"");
+      h+=`<i class="${c}"></i>`;
+    }
+    h+='</div>';
+  }
+  return h+'</div><p class="unitnote">左の へやが いっぱい（10）に なると くり上がり</p>';
+}
+/* ① たしざん（20まで） */
+function qAddG1(carry){
+  let a,b;
+  if(carry){ a=R(5,9); b=R(11-a,9); }              /* こたえが 11〜18 */
+  else{ const a1=R(1,7); a=10+a1; b=R(1,9-a1); }   /* 十のくらいは そのまま */
+  const s2=a+b, kA=numKana(a),kB=numKana(b),kS=numKana(s2);
+  return{
+    title:"たしざん",
+    expr:`${a} + ${b} = ?`, exprDone:`${a} + ${b} = ${s2}`,
+    exprSay:`${kA} たす ${kB}`, ansSay:`${kA} たす ${kB} は ${kS}`,
+    say:`${kA} たす ${kB} は いくつ？`,
+    caption:carry?"10の まとまりを つくって かんがえよう":"10と いくつ かな？",
+    ans:s2, replay:false,
+    options:optsFrom(s2,[s2+1,s2-1,s2+10,s2-10,s2+2,s2-2]),
+    build(tray){ tray.innerHTML=`<div class="bigexpr">${a} + ${b} = □</div>`+tenFrame(a,b,"add"); }
+  };
+}
+/* ② ひきざん（20まで） */
+function qSubG1(borrow){
+  let a,b;
+  if(borrow){ const a1=R(1,8); a=10+a1; b=R(a1+1,9); }   /* 一のくらいが ひけない */
+  else{ const a1=R(1,9); a=10+a1; b=R(1,a1); }
+  const d=a-b, kA=numKana(a),kB=numKana(b),kD=numKana(d);
+  return{
+    title:"ひきざん",
+    expr:`${a} − ${b} = ?`, exprDone:`${a} − ${b} = ${d}`,
+    exprSay:`${kA} ひく ${kB}`, ansSay:`${kA} ひく ${kB} は ${kD}`,
+    say:`${kA} ひく ${kB} は いくつ？`,
+    caption:borrow?"10から ひいて のこりを たそう":"10は そのまま、のこりを ひこう",
+    ans:d, replay:false,
+    options:optsFrom(d,[d+1,d-1,d+10,d-10,10-b,d+2,d-2]),
+    build(tray){ tray.innerHTML=`<div class="bigexpr">${a} − ${b} = □</div>`+tenFrame(a,b,"sub"); }
+  };
+}
+/* ③ 3つの かずの けいさん */
+function qThree(){
+  const t=R(1,3); let a,b,c,ans,g;
+  if(t===1){ a=R(1,5); b=R(1,4); c=R(1,10-a-b>0?10-a-b:1); ans=a+b+c; g=`${a} + ${b} + ${c}`; }
+  else if(t===2){ a=R(6,10); b=R(1,a-2); c=R(1,a-b-1); ans=a-b-c; g=`${a} − ${b} − ${c}`; }
+  else { a=R(2,7); b=R(1,10-a); c=R(1,a+b-1); ans=a+b-c; g=`${a} + ${b} − ${c}`; }
+  return{
+    title:"まえから じゅんに けいさんしよう",
+    expr:`${g} = ?`, exprDone:`${g} = ${ans}`,
+    exprSay:kanaize(g.replace(/\s*\+\s*/g," たす ").replace(/\s*−\s*/g," ひく ")),
+    ansSay:`こたえは ${numKana(ans)}`,
+    say:kanaize(g.replace(/\s*\+\s*/g," たす ").replace(/\s*−\s*/g," ひく "))+" は いくつ？",
+    caption:"はじめの 2つから！",
+    ans:ans, replay:false,
+    options:optsFrom(ans,[ans+1,ans-1,ans+2,ans-2,a+b+c,a-b+c]),
+    build(tray){ tray.innerHTML=`<div class="bigexpr">${g} = □</div>`; }
+  };
+}
+/* ④ 大きい かず（10のたばと ばら） */
+function qTen(){
+  const t=R(1,9), o=R(0,9), ans=t*10+o;
+  let h='<div class="bund">';
+  for(let i=0;i<t;i++)h+='<span class="bar"></span>';
+  h+='<span class="ones">';
+  for(let i=0;i<o;i++)h+='<i></i>';
+  return {
+    title:`10の たばが ${t}こ、ばらが ${o}こ。\nぜんぶで いくつ？`,
+    say:`じゅうの たばが ${numKana(t)}こ、ばらが ${numKana(o)}こ。ぜんぶで いくつ？`,
+    caption:"10が いくつ分 かな？",
+    ans:ans, ansSay:`こたえは ${numKana(ans)}`, replay:false,
+    options:optsFrom(ans,[t+o,o*10+t,ans+10,ans-10,ans+1,ans-1]),
+    build(tray){ tray.innerHTML=h+'</span></div>'; }
+  };
+}
+/* ⑤ とけい（何時・何時半） */
+function qClock1(){
+  const h=R(1,12), half=R(0,1)===1, m=half?30:0;
+  const f=(hh,hf)=>{hh=((hh-1+12)%12)+1;return hf?`${hh}時半`:`${hh}時`;};
+  const ans=f(h,half);
+  return{
+    title:"いま 何時？",
+    say:"とけいを よんでね。みじかい はりを 見よう",
+    caption:half?"ながい はりが 6を さしたら「半」":"ながい はりが 12だよ",
+    ans:ans, showAns:true, ansSay:`こたえは ${numKana(h)}じ${half?"はん":""}`, replay:false,
+    options:optsFrom(ans,[f(h+1,half),f(h-1,half),f(h,!half),f(h+1,!half),f(h-1,!half)],textCard),
+    build(tray){ tray.innerHTML=clockSVG(h,m); }
+  };
+}
+
+/* ═══════════════════════════════════════════
+   2年生モード
+   ═══════════════════════════════════════════ */
+/* 選択肢：数字＋（あれば）たんい。ドットは出さない */
+function plainCard(v,unit){
+  return `<span class="n">${v}</span>`+(unit?`<span class="u">${unit}</span>`:"");
+}
+const textCard=v=>`<span class="n" style="font-size:clamp(17px,5.4vw,25px)">${v}</span>`;
+/* 正解＋まちがえやすい候補から 4つ つくる */
+function optsFrom(ans,cands,fmt){
+  fmt=fmt||(v=>plainCard(v));
+  const seen=new Set([String(ans)]);
+  const out=[ans];
+  for(const c of shuffle(cands.slice())){
+    if(out.length>=4)break;
+    if(c===null||c===undefined)continue;
+    if(typeof c==="number"&&(!isFinite(c)||c<0))continue;
+    const k=String(c);
+    if(seen.has(k))continue;
+    seen.add(k);out.push(c);
+  }
+  return shuffle(out).map(v=>({val:v,html:fmt(v)}));
+}
+
+/* たんいの よみ（読み上げを ONに した ときのため） */
+const YOMI=[["mL","ミリリットル"],["dL","デシリットル"],["mm","ミリメートル"],
+  ["cm","センチメートル"],["m","メートル"],["L","リットル"],["□","いくつ"],["=","は"]];
+const unitSay=s=>{let t=String(s);YOMI.forEach(([a,b])=>{t=t.split(a).join(b);});return kanaize(t);};
+
+/* ── ひっ算の見た目 ── */
+function hissanHTML(a,b,op){
+  const pad=n=>String(n).padStart(3," ").split("")
+    .map(c=>c===" "?'<span class="blank"></span>':`<span>${c}</span>`).join("");
+  return `<div class="hissan">`
+    +`<span></span>${pad(a)}`
+    +`<span class="op">${op}</span>${pad(b)}`
+    +`<div class="line"></div>`
+    +`<span></span><span class="q" style="grid-column:2/5">?</span>`
+    +`</div>`;
+}
+/* ① ひっ算 たし算 */
+function qColAdd(carry){
+  let a1,b1,a10,b10;
+  if(carry){ a1=R(4,9); b1=R(10-a1,9); a10=R(1,4); b10=R(1,4); }
+  else     { a1=R(1,7); b1=R(1,9-a1); a10=R(1,7); b10=R(1,9-a10); }
+  const a=a10*10+a1, b=b10*10+b1, s=a+b;
+  return{
+    title:"ひっ算の こたえは？",
+    expr:`${a} + ${b} = ?`, exprDone:`${a} + ${b} = ${s}`,
+    exprSay:`${numKana(a)} たす ${numKana(b)}`,
+    ansSay:`${numKana(a)} たす ${numKana(b)} は ${numKana(s)}`,
+    say:`${numKana(a)} たす ${numKana(b)} は いくつ？`,
+    caption:carry?"一のくらいから 計算しよう":"くらいを そろえて 計算しよう",
+    ans:s, replay:false,
+    options:optsFrom(s,[s-10,s+10,s+9,s-9,s+1,s-1]),
+    build(tray){ tray.innerHTML=hissanHTML(a,b,"+"); }
+  };
+}
+/* ② ひっ算 ひき算 */
+function qColSub(borrow){
+  const a10=R(3,9);
+  let a1,b1,b10;
+  if(borrow){ a1=R(0,7); b1=R(a1+1,9); b10=R(1,Math.max(1,a10-2)); }
+  else      { a1=R(2,9); b1=R(1,a1);   b10=R(1,a10-1); }
+  const a=a10*10+a1, b=b10*10+b1, d=a-b;
+  const swap=(a10-b10)*10+Math.abs(a1-b1);   /* 「引けないので ひっくり返す」ミス */
+  return{
+    title:"ひっ算の こたえは？",
+    expr:`${a} − ${b} = ?`, exprDone:`${a} − ${b} = ${d}`,
+    exprSay:`${numKana(a)} ひく ${numKana(b)}`,
+    ansSay:`${numKana(a)} ひく ${numKana(b)} は ${numKana(d)}`,
+    say:`${numKana(a)} ひく ${numKana(b)} は いくつ？`,
+    caption:borrow?"一のくらいが ひけない ときは？":"くらいを そろえて 計算しよう",
+    ans:d, replay:false,
+    options:optsFrom(d,[borrow?swap:null,d+10,d-10,d+1,d-1,d+9]),
+    build(tray){ tray.innerHTML=hissanHTML(a,b,"−"); }
+  };
+}
+/* ③ 九九：「1つ分の数 × いくつ分」を そのまま 絵にする */
+function qMul(dans){
+  const a=dans[R(0,dans.length-1)], b=R(1,9), e=pickFish(), p=a*b;
+  return{
+    title:`${a}ひきずつ ${b}つの グループ`,
+    expr:`${a} × ${b} = ?`, exprDone:`${a} × ${b} = ${p}`,
+    exprSay:`${numKana(a)} かける ${numKana(b)}`,
+    ansSay:`${numKana(a)} かける ${numKana(b)} は ${numKana(p)}`,
+    say:`${numKana(a)} かける ${numKana(b)} は いくつ`,
+    caption:"ぜんぶで 何びき？",
+    ans:p, replay:false,
+    options:optsFrom(p,[a*(b+1),a*(b-1),p+1,p-1,(a+1)*b,(a-1)*b,a+b]),
+    build(tray){
+      let h=`<div class="mularray${a*b>=36?" small":""}">`;
+      for(let r=0;r<b;r++){ h+='<div class="mrow">';
+        for(let c=0;c<a;c++)h+=`<span>${e}</span>`;
+        h+='</div>'; }
+      tray.innerHTML=h+'</div>';
+    }
+  };
+}
+/* ── とけいの絵 ── */
+function clockSVG(h,m){
+  const cx=100,cy=100;
+  let s=`<svg viewBox="0 0 200 200" role="img" aria-label="とけい">
+    <circle cx="100" cy="100" r="96" fill="#fffaf0" stroke="#0a2b45" stroke-width="6"/>`;
+  for(let i=0;i<60;i++){
+    const a=(i*6-90)*Math.PI/180, big=i%5===0;
+    const r1=big?80:85, r2=91;
+    s+=`<line x1="${(cx+r1*Math.cos(a)).toFixed(1)}" y1="${(cy+r1*Math.sin(a)).toFixed(1)}"
+      x2="${(cx+r2*Math.cos(a)).toFixed(1)}" y2="${(cy+r2*Math.sin(a)).toFixed(1)}"
+      stroke="${big?"#0a2b45":"#8fa9bd"}" stroke-width="${big?3.4:1.5}" stroke-linecap="round"/>`;
+  }
+  for(let i=1;i<=12;i++){
+    const a=(i*30-90)*Math.PI/180;
+    s+=`<text x="${(cx+58*Math.cos(a)).toFixed(1)}" y="${(cy+58*Math.sin(a)+7).toFixed(1)}"
+      text-anchor="middle" font-size="21" font-weight="800" fill="#0a2b45">${i}</text>`;
+    const mm=i*5;
+    s+=`<text x="${(cx+74*Math.cos(a)).toFixed(1)}" y="${(cy+74*Math.sin(a)+4).toFixed(1)}"
+      text-anchor="middle" font-size="10" font-weight="700" fill="#c04a2c">${mm===60?0:mm}</text>`;
+  }
+  const ma=(m*6-90)*Math.PI/180, ha=(((h%12)*30+m*0.5)-90)*Math.PI/180;
+  s+=`<line x1="100" y1="100" x2="${(cx+48*Math.cos(ha)).toFixed(1)}" y2="${(cy+48*Math.sin(ha)).toFixed(1)}"
+        stroke="#0a2b45" stroke-width="9" stroke-linecap="round"/>`;
+  s+=`<line x1="100" y1="100" x2="${(cx+72*Math.cos(ma)).toFixed(1)}" y2="${(cy+72*Math.sin(ma)).toFixed(1)}"
+        stroke="#c04a2c" stroke-width="5.5" stroke-linecap="round"/>`;
+  s+=`<circle cx="100" cy="100" r="7" fill="#0a2b45"/></svg>`;
+  return `<div class="clockwrap">${s}</div>`;
+}
+const fmtTime=(h,m)=>m===0?`${h}時`:`${h}時${m}分`;
+const sayTime=(h,m)=>m===0?`${numKana(h)}じ`:`${numKana(h)}じ${numKana(m)}ふん`;
+const normTime=t=>{t=((t%720)+720)%720;const H=Math.floor(t/60);return[H===0?12:H,t%60];};
+/* ④ 時計を よむ */
+function qClockRead(){
+  const h=R(1,12);
+  const m=R(1,10)<=7?R(1,11)*5:R(1,59);
+  const cands=[];
+  [-5,5,-10,10,-1,1].forEach(d=>{const[H,M]=normTime((h%12)*60+m+d);cands.push(fmtTime(H,M));});
+  [h===12?1:h+1,h===1?12:h-1].forEach(H=>cands.push(fmtTime(H,m)));
+  return{
+    title:"いま 何時何分？",
+    say:"とけいを よんでね。みじかい はりが 時、ながい はりが 分",
+    caption:"あかい はりが 分だよ",
+    ans:fmtTime(h,m), showAns:true, ansSay:`こたえは ${sayTime(h,m)}`, replay:false,
+    options:optsFrom(fmtTime(h,m),cands,textCard),
+    build(tray){ tray.innerHTML=clockSVG(h,m); }
+  };
+}
+/* ⑤ 時間の計算 */
+function qClockCalc(){
+  const h=R(1,12), m=[0,10,15,20,30,40,45,50][R(0,7)];
+  const d=[10,15,20,30,45,60][R(0,5)], dir=R(0,1)?1:-1;
+  const[H,M]=normTime((h%12)*60+m+dir*d);
+  const[bH,bM]=normTime((h%12)*60+m-dir*d);      /* 向きを まちがえた こたえ */
+  const cands=[fmtTime(bH,bM)];
+  [-60,60,-5,5,-10,10].forEach(x=>{const[a,b]=normTime((h%12)*60+m+dir*d+x);cands.push(fmtTime(a,b));});
+  return{
+    title:`${fmtTime(h,m)}の\n${d===60?"1時間":d+"分"}${dir>0?"あと":"まえ"}は 何時何分？`,
+    say:`${sayTime(h,m)}の ${d===60?"いちじかん":numKana(d)+"ふん"}${dir>0?"あと":"まえ"}は`,
+    caption:"ながい はりを うごかして かんがえよう",
+    ans:fmtTime(H,M), showAns:true, ansSay:`こたえは ${sayTime(H,M)}`, replay:false,
+    options:optsFrom(fmtTime(H,M),cands,textCard),
+    build(tray){ tray.innerHTML=clockSVG(h,m); }
+  };
+}
+/* ── ものさし／テープの絵 ── */
+function rulerSVG(mm){
+  const maxMm=Math.max(100,Math.ceil(mm/10)*10), px=3.4, W=maxMm*px+24;
+  let s=`<svg viewBox="0 0 ${W} 74" role="img" aria-label="ものさし">
+    <rect x="12" y="8" width="${maxMm*px}" height="34" rx="4" fill="#fffaf0" stroke="#0a2b45" stroke-width="2"/>`;
+  for(let i=0;i<=maxMm;i++){
+    const x=12+i*px, big=i%10===0, mid=i%5===0;
+    s+=`<line x1="${x.toFixed(1)}" y1="8" x2="${x.toFixed(1)}" y2="${big?32:(mid?24:18)}"
+      stroke="#0a2b45" stroke-width="${big?2:1}"/>`;
+    if(big)s+=`<text x="${x.toFixed(1)}" y="40" text-anchor="middle" font-size="9" font-weight="800" fill="#0a2b45">${i/10}</text>`;
+  }
+  s+=`<rect x="12" y="48" width="${(mm*px).toFixed(1)}" height="12" rx="6" fill="#ff7a59"/>`;
+  s+=`<text x="${(12+mm*px/2).toFixed(1)}" y="72" text-anchor="middle" font-size="11" font-weight="800" fill="#fffaf0">ここ</text>`;
+  s+=`</svg>`;
+  return `<div class="unitvis">${s}</div><p class="unitnote">めもり 1つは 1mm、大きい めもりは 1cm</p>`;
+}
+function tapeSVG(m,extraCm){
+  const W=340, seg=Math.min(m,5), w=(W-24)/Math.max(seg,1);
+  let s=`<svg viewBox="0 0 ${W} 70" role="img" aria-label="1mのテープ">`;
+  for(let i=0;i<seg;i++){
+    s+=`<rect x="${12+i*w}" y="16" width="${w-4}" height="30" rx="5" fill="#3fc8d8" stroke="#0a2b45" stroke-width="2"/>`;
+    s+=`<text x="${12+i*w+(w-4)/2}" y="37" text-anchor="middle" font-size="13" font-weight="800" fill="#0a2b45">1m</text>`;
+  }
+  s+=`<text x="${W/2}" y="62" text-anchor="middle" font-size="12" font-weight="800" fill="#b8f2e6">1m = 100cm`
+    +(extraCm?`　＋ ${extraCm}cm`:"")+`</text></svg>`;
+  return `<div class="unitvis">${s}</div>`;
+}
+/* ⑥ 長さ */
+function qLength(){
+  const t=R(1,6);
+  const box=(g,unit,ans,cands,vis,cap,fmt)=>({
+    title:"□に 入る 数は？",
+    say:unitSay(g),
+    caption:cap||"", ans:ans, showAns:true, replay:false,
+    ansSay:`こたえは ${unitSay(String(ans)+unit)}`,
+    exprBig:g, options:optsFrom(ans,cands,fmt||(v=>plainCard(v,unit))),
+    build(tray){ tray.innerHTML=`<div class="bigexpr">${g}</div>`+(vis||""); }
+  });
+  if(t===1){ const n=R(1,9);
+    return box(`${n}cm = □mm`,"mm",n*10,[n,n*100,n*10+10,n*10-10,n+10],rulerSVG(n*10),"1cm は 10mm"); }
+  if(t===2){ const n=R(1,9);
+    return box(`${n*10}mm = □cm`,"cm",n,[n*10,n*100,n+1,n-1,n+10],rulerSVG(n*10),"10mm で 1cm"); }
+  if(t===3){ const n=R(1,5);
+    return box(`${n}m = □cm`,"cm",n*100,[n*10,n*1000,n*100+100,n*100-100],tapeSVG(n),"1m は 100cm"); }
+  if(t===4){ const A=R(1,3),B=R(1,9)*10;
+    return box(`${A}m${B}cm = □cm`,"cm",A*100+B,[A*10+B,A*100+B*10,A*100+B+100,A+B],tapeSVG(A,B),"1m は 100cm"); }
+  if(t===5){ const A=R(1,9),B=R(1,9);
+    return box(`${A}cm${B}mm = □mm`,"mm",A*10+B,[A+B,A*10+B+10,B*10+A,A*100+B],rulerSVG(A*10+B),"1cm は 10mm"); }
+  const A=R(1,9),B=R(1,9),v=`${A}cm${B}mm`;
+  const cands=[`${B}cm${A}mm`,`${A+1}cm${B}mm`,`${A}cm${B+1}mm`,`${A*10+B}cm`];
+  return{
+    title:"□に 入る 長さは？",
+    say:kanaize(`${A*10+B}ミリメートルは なんセンチ なんミリ？`),
+    caption:"10mm ごとに 1cm に かえよう",
+    ans:v, showAns:true, replay:false, ansSay:`こたえは ${unitSay(v)}`,
+    options:optsFrom(v,cands,textCard),
+    build(tray){ tray.innerHTML=`<div class="bigexpr">${A*10+B}mm = □</div>`+rulerSVG(A*10+B); }
+  };
+}
+/* ── ますの絵（1L＝10dL） ── */
+function beakerSVG(totalDL){
+  const n=Math.min(Math.ceil(totalDL/10),5), W=n*64+16;
+  let s=`<svg viewBox="0 0 ${W} 96" role="img" aria-label="1リットルます">`;
+  let left=totalDL;
+  for(let i=0;i<n;i++){
+    const x=12+i*64, fill=Math.max(0,Math.min(10,left)); left-=10;
+    s+=`<rect x="${x}" y="10" width="48" height="76" rx="6" fill="#fffaf0" stroke="#0a2b45" stroke-width="2.5"/>`;
+    s+=`<rect x="${x+2.5}" y="${10+76-76*fill/10+1}" width="43" height="${(76*fill/10-2).toFixed(1)}" fill="#3fc8d8"/>`;
+    for(let k=1;k<10;k++){
+      const y=10+76-76*k/10;
+      s+=`<line x1="${x}" y1="${y.toFixed(1)}" x2="${x+(k===5?20:12)}" y2="${y.toFixed(1)}" stroke="#0a2b45" stroke-width="1.2"/>`;
+    }
+    s+=`<text x="${x+24}" y="95" text-anchor="middle" font-size="10" font-weight="800" fill="#b8f2e6">1L</text>`;
+  }
+  s+=`</svg>`;
+  return `<div class="unitvis">${s}</div><p class="unitnote">1Lます は 10こに わけると 1つが 1dL</p>`;
+}
+/* ⑦ かさ */
+function qVolume(){
+  const t=R(1,6);
+  const box=(g,unit,ans,cands,vis,cap)=>({
+    title:"□に 入る 数は？",
+    say:unitSay(g),
+    caption:cap||"", ans:ans, showAns:true, replay:false,
+    ansSay:`こたえは ${unitSay(String(ans)+unit)}`,
+    options:optsFrom(ans,cands,v=>plainCard(v,unit)),
+    build(tray){ tray.innerHTML=`<div class="bigexpr">${g}</div>`+(vis||""); }
+  });
+  if(t===1){ const n=R(1,4);
+    return box(`${n}L = □dL`,"dL",n*10,[n,n*100,n*10+10,n+10],beakerSVG(n*10),"1L は 10dL"); }
+  if(t===2){ const n=R(1,9);
+    return box(`${n}dL = □mL`,"mL",n*100,[n*10,n*1000,n*100+100,n+100],beakerSVG(n),"1dL は 100mL"); }
+  if(t===3){ const n=R(1,3);
+    return box(`${n}L = □mL`,"mL",n*1000,[n*100,n*10,n*1000+100,n*100+1000],beakerSVG(n*10),"1L は 1000mL"); }
+  if(t===4){ const n=R(1,4);
+    return box(`${n*10}dL = □L`,"L",n,[n*10,n*100,n+1,n+10],beakerSVG(n*10),"10dL で 1L"); }
+  if(t===5){ const n=R(1,9);
+    return box(`${n*100}mL = □dL`,"dL",n,[n*10,n*100,n+1,n+10],beakerSVG(n),"100mL で 1dL"); }
+  const A=R(1,3),B=R(1,9);
+  return box(`${A}L${B}dL = □dL`,"dL",A*10+B,[A+B,A*100+B,A*10+B+10,B*10+A],beakerSVG(A*10+B),"1L は 10dL");
+}
+
+/* ═══════════ おと ═══════════ */
 let AC=null;
-function tone(f,t,d,type){if(!AC)return;const o=AC.createOscillator(),g=AC.createGain();
+function tone(f,t,d,type,vol){
+  if(!AC||!state.sfx)return;
+  const o=AC.createOscillator(),g=AC.createGain();
   o.type=type||"sine";o.frequency.value=f;o.connect(g);g.connect(AC.destination);
   g.gain.setValueAtTime(.0001,AC.currentTime+t);
-  g.gain.exponentialRampToValueAtTime(.25,AC.currentTime+t+.02);
+  g.gain.exponentialRampToValueAtTime(vol||.22,AC.currentTime+t+.02);
   g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+t+d);
-  o.start(AC.currentTime+t);o.stop(AC.currentTime+t+d+.05);}
+  o.start(AC.currentTime+t);o.stop(AC.currentTime+t+d+.05);
+}
+const blip=f=>tone(f||700,0,.12,"sine",.18);
+const swoosh=()=>{tone(300,0,.18,"sine",.14);tone(220,.06,.2,"sine",.10);};
 const sfxOK=()=>[523,659,784,1047].forEach((f,i)=>tone(f,i*.09,.22));
-const sfxNG=()=>{tone(392,0,.18);tone(330,.14,.26);};
+const sfxNG=()=>{tone(392,0,.16,"sine",.16);tone(330,.13,.22,"sine",.16);};
 const sfxLv=()=>[523,659,784,1047,1319].forEach((f,i)=>tone(f,i*.12,.35,"triangle"));
-function say(t){if(!state.sound||!window.speechSynthesis)return;
-  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);
-  u.lang="ja-JP";u.rate=.95;u.pitch=1.35;speechSynthesis.speak(u);}
 
-/* ───────── storage (あれば つかう) ───────── */
-async function save(){try{await window.storage.set("umi-sansu",
-  JSON.stringify({stage:state.stage,stars:state.stars,fish:state.fish,ok:state.ok}));}catch(e){}}
-async function load(){try{const r=await window.storage.get("umi-sansu");
-  if(r&&r.value){const d=JSON.parse(r.value);Object.assign(state,d);}}catch(e){}}
+/* ═══════════ こえ（日本語音声を明示指定） ═══════════ */
+let JAVOICE=null, VOICEREADY=false;
+function pickVoice(){
+  if(!window.speechSynthesis)return null;
+  const vs=speechSynthesis.getVoices()||[];
+  const ja=vs.filter(v=>/^ja(\b|[-_])/i.test(v.lang||"")||/japan/i.test(v.name||""));
+  if(!ja.length)return null;
+  const pref=["Kyoko","O-ren","Otoya","Google 日本語","Google Japanese",
+    "Nanami","Ayumi","Haruka","Ichiro","Mizuki","Hattori","Sayaka"];
+  for(const p of pref){const hit=ja.find(v=>(v.name||"").indexOf(p)>=0);if(hit)return hit;}
+  return ja[0];
+}
+function refreshVoice(){
+  JAVOICE=pickVoice();
+  VOICEREADY=!!JAVOICE;
+  const n=$("voiceNote");
+  if(n)n.textContent=VOICEREADY
+    ? `この端末の日本語音声「${JAVOICE.name}」で読み上げます。数字はすべて かな に変換してから読ませているため「2」を英語で読むことはありません。`
+    : "この端末に日本語の音声が見つかりませんでした。英語音声で数字が読まれるのを防ぐため、読み上げは自動でオフにしています（効果音と絵だけで遊べます）。iOS/Androidの「設定 → アクセシビリティ → 読み上げ」で日本語の声を追加すると使えます。";
+}
+if(window.speechSynthesis){
+  refreshVoice();
+  speechSynthesis.addEventListener?speechSynthesis.addEventListener("voiceschanged",refreshVoice)
+    :(speechSynthesis.onvoiceschanged=refreshVoice);
+  setTimeout(refreshVoice,600); setTimeout(refreshVoice,1800);
+}
+/* queue=true なら前の発話を止めずに続けて読む */
+function say(text,queue){
+  if(!state.sound||!VOICEREADY||!window.speechSynthesis)return;
+  const t=kanaize(text).trim();
+  if(!t)return;
+  if(!queue)speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);
+  u.voice=JAVOICE; u.lang=JAVOICE.lang||"ja-JP";
+  u.rate=state.rate; u.pitch=1.25; u.volume=1;
+  speechSynthesis.speak(u);
+}
 
-/* ───────── render ───────── */
-function bubbles(){const c=$("bubbles");for(let i=0;i<16;i++){const b=document.createElement("div");
-  b.className="bub";const s=R(6,26);b.style.cssText=
-  `width:${s}px;height:${s}px;left:${R(0,100)}%;--dx:${R(-40,40)}px;
-   animation-duration:${R(9,20)}s;animation-delay:-${R(0,18)}s`;c.appendChild(b);}}
-function confetti(){const p=$("party");for(let i=0;i<22;i++){const d=document.createElement("div");
-  d.className="conf";d.textContent=["⭐","🫧","🐟","🐠","✨","🌟"][R(0,5)];
-  d.style.left=R(0,96)+"%";d.style.animationDelay=(R(0,60)/100)+"s";p.appendChild(d);
-  setTimeout(()=>d.remove(),2400);}}
-function marinFace(cls){const m=$("marin");m.className="marin "+(cls||"");
-  if(cls)setTimeout(()=>m.className="marin",1400);}
-setInterval(()=>{const m=$("marin");if(m&&m.className==="marin"){m.classList.add("blink");
-  setTimeout(()=>m.classList.remove("blink"),160);}},3800);
+/* ═══════════ ほぞん（モードごとに べつべつ） ═══════════ */
+const KEY=()=>M().key;
+async function save(){
+  const d=JSON.stringify({stage:state.stage,stars:state.stars,fish:state.fish,ok:state.ok,
+    sound:state.sound,sfx:state.sfx,rate:state.rate});
+  try{ if(window.storage&&window.storage.set){await window.storage.set(KEY(),d);return;} }catch(e){}
+  try{ localStorage.setItem(KEY(),d); }catch(e){}
+}
+async function load(){
+  /* モードを 切りかえたら 進み具合を いったん まっさらに戻してから 読み込む */
+  const m=state.mode;
+  Object.assign(state,{stage:0,ok:0,stars:0,fish:0,miss:0,tries:0,
+    sound:true,sfx:true,rate:MODES[m].rate});
+  let raw=null;
+  try{ if(window.storage&&window.storage.get){const r=await window.storage.get(KEY());raw=r&&r.value;} }catch(e){}
+  if(!raw){try{ raw=localStorage.getItem(KEY()); }catch(e){}}
+  if(raw){try{ Object.assign(state,JSON.parse(raw)); }catch(e){}}
+  state.mode=m;
+}
+
+/* ═══════════ びじゅつ ═══════════ */
+function bubbles(){
+  const c=$("bubbles");
+  for(let i=0;i<16;i++){
+    const b=document.createElement("div");b.className="bub";const s=R(6,26);
+    b.style.cssText=`width:${s}px;height:${s}px;left:${R(0,100)}%;--dx:${R(-40,40)}px;
+      animation-duration:${R(9,20)}s;animation-delay:-${R(0,18)}s`;
+    c.appendChild(b);
+  }
+}
+function confetti(){
+  const p=$("party");
+  for(let i=0;i<20;i++){
+    const d=document.createElement("div");d.className="conf";
+    d.textContent=["⭐","🫧","🐟","🐠","✨","🌟"][R(0,5)];
+    d.style.left=R(0,96)+"%";d.style.animationDelay=(R(0,60)/100)+"s";
+    p.appendChild(d);setTimeout(()=>d.remove(),2400);
+  }
+}
+function marinFace(cls){
+  const m=$("marin");m.className="marin "+(cls||"");
+  if(cls)setTimeout(()=>{if(m.className!=="marin")m.className="marin";},1400);
+}
+setInterval(()=>{const m=$("marin");
+  if(m&&m.className==="marin"){m.classList.add("blink");
+    setTimeout(()=>m.classList.remove("blink"),160);}},3800);
+const setCaption=t=>{$("caption").textContent=t||"";};
+/* しきを ひからせて 読む。「具体 → ことば → きごう」の順に出す */
+/* 読み上げを 言い切ってから 次へ。途中で切ると「謎の数字」に聞こえる */
+function afterSpeech(cb,minMs,maxMs){
+  const t0=Date.now();
+  const tick=()=>{
+    const el=Date.now()-t0;
+    const busy=state.sound&&VOICEREADY&&window.speechSynthesis&&speechSynthesis.speaking;
+    if(el>=maxMs||(el>=minMs&&!busy))return cb();
+    setTimeout(tick,120);
+  };
+  setTimeout(tick,minMs);
+}
+function flashExpr(text){
+  const el=$("qExpr");
+  if(!el.textContent)return;
+  el.classList.remove("speak");
+  void el.offsetWidth;                 /* アニメを 確実に 再生 */
+  el.classList.add("speak");
+  setTimeout(()=>el.classList.remove("speak"),1400);
+  if(text)say(text,true);
+}
 
 function paintTop(){
-  $("stageBadge").textContent="ステージ "+Math.min(state.stage+1,STAGES.length);
+  $("stageBadge").textContent=M().label+" ステージ "+Math.min(state.stage+1,STAGE_LIST().length);
   $("starBadge").textContent="⭐ "+state.stars;
-  $("stageName").textContent=STAGES[Math.min(state.stage,STAGES.length-1)].name;
+  $("stageName").textContent=curStage().name;
   let d="";for(let i=0;i<NEED;i++)d+=`<span class="dot ${i<state.ok?"on":""}"></span>`;
-  $("dots").innerHTML=d;}
+  $("dots").innerHTML=d;
+}
 
+/* ═══════════ しゅつだい ═══════════ */
 function nextQ(){
-  state.tries=0;
-  state.q=STAGES[Math.min(state.stage,STAGES.length-1)].gen();
+  state.tries=0; state.gen++;
+  const q=curStage().gen();
+  state.q=q;
   paintTop();
-  $("qTitle").textContent=state.q.title;
-  $("qTray").innerHTML=state.q.tray;
-  const box=$("answers");box.innerHTML="";
-  state.q.options.forEach(o=>{const b=document.createElement("button");
-    b.className="ans";b.innerHTML=o.html;b.onclick=()=>answer(b,o.val);box.appendChild(b);});
-  $("speech").textContent="こたえを タッチしてね";
-  say(state.q.say);}
+  $("qTitle").textContent=q.title;
+  $("qExpr").textContent=q.expr||"";
+  const tray=$("qTray"); tray.innerHTML="";
+  setCaption(q.caption||"");
+  $("replayBtn").hidden=!q.replay;
+  q.build(tray);
+  /* まちがいが増えたら選択肢を減らす（成功体験を切らさない） */
+  const n=state.miss>=4?2:(state.miss>=2?3:4);
+  const opts=trimOptions(q.options,q.ans,n);
+  const box=$("answers");
+  box.className="answers"+(opts.length===3?" three":"");
+  box.innerHTML="";
+  opts.forEach(o=>{
+    const b=document.createElement("button");
+    b.className="ans";b.innerHTML=o.html;
+    if(o.val===q.ans)b.dataset.correct="1";
+    b.onclick=()=>answer(b,o.val);
+    box.appendChild(b);
+  });
+  $("speech").textContent=isSchool()?"こたえを えらんでね":"こたえを タッチしてね";
+  say(q.say);
+}
+function trimOptions(list,ans,n){
+  if(list.length<=n)return list;
+  const keep=list.filter(o=>o.val===ans);
+  const rest=shuffle(list.filter(o=>o.val!==ans)).slice(0,n-1);
+  return shuffle(keep.concat(rest));
+}
 
 function answer(btn,val){
   if(btn.dataset.done)return;
   if(val===state.q.ans){
-    btn.classList.add("right");btn.dataset.done=1;
-    [...$("answers").children].forEach(b=>b.dataset.done=1);
+    state.gen++;                       /* 実行中アニメを止める */
+    btn.classList.add("right");
+    [...$("answers").children].forEach(b=>{b.dataset.done=1;if(b!==btn)b.classList.add("dim");});
     sfxOK();confetti();marinFace("happy");
-    state.stars++; const w=YAY[R(0,YAY.length-1)];
-    $("speech").textContent=w+" ⭐+1";say(w);
-    state.ok++;paintTop();save();
-    setTimeout(()=>{ if(state.ok>=NEED) levelUp(); else nextQ(); },1250);
+    state.stars++;state.ok++;
+    const Y=isSchool()?YAY_S:YAY, YS=isSchool()?YAYSAY_S:YAYSAY;
+    const i=R(0,Y.length-1);
+    $("speech").textContent=Y[i]+" ⭐+1";
+    say(YS[i]);
+    if(state.q.exprDone){                /* しきを 完成させて まるごと 見せる */
+      $("qExpr").textContent=state.q.exprDone;
+      setCaption("");
+      flashExpr(state.q.ansSay);         /* 「ご ひく いち は よん」 */
+    }else{
+      if(typeof state.q.ans==="number"||state.q.showAns)setCaption(`こたえは ${state.q.ans}！`);
+      if(state.q.ansSay)say(state.q.ansSay,true);
+    }
+    paintTop();save();
+    /* 言い終わるまで待つ。無音・音声オフなら 1.2秒で進む */
+    afterSpeech(()=>{ if(state.ok>=NEED)levelUp(); else nextQ(); },1200,4200);
   }else{
-    btn.classList.add("wrong");btn.dataset.done=1;
+    btn.classList.add("wrong");btn.dataset.done=1;btn.classList.add("dim");
     sfxNG();marinFace("cheer");
-    state.tries++;
-    const w=CHEER[R(0,CHEER.length-1)];
-    $("speech").textContent=w;say(w);
-    $("qTray").innerHTML=state.q.hint;
+    state.tries++;state.miss++;
+    const C=isSchool()?CHEER_S:CHEER, CS=isSchool()?CHEERSAY_S:CHEERSAY;
+    const i=R(0,C.length-1);
+    $("speech").textContent=C[i];
+    say(CS[i]);
+    if(state.q.replay)replay();          /* もういちど見せる */
     if(state.tries>=2){
-      [...$("answers").children].forEach((b,i)=>{
-        if(state.q.options[i].val===state.q.ans)b.classList.add("hintme");});
-      $("speech").textContent="ひかってる ボタンだよ！";
+      [...$("answers").children].forEach(b=>{
+        if(b.dataset.correct)b.classList.add("hintme");
+      });
+      $("speech").textContent=isSchool()?"ヒント！ ひかっている ボタンだよ":"ひかってる ボタンだよ！";
+      say(isSchool()?"ひかって いる ぼたんが こたえだよ":"ひかってる ぼたんを おしてね");
     }
     setTimeout(()=>btn.classList.remove("wrong"),450);
   }
 }
+function replay(){
+  const q=state.q;if(!q)return;
+  state.gen++;
+  $("qExpr").textContent=q.expr||"";
+  const tray=$("qTray");tray.innerHTML="";
+  setCaption(q.caption||"");
+  q.build(tray);
+}
 
 function levelUp(){
   sfxLv();confetti();
-  const got=state.fish<FISH.length;
-  const f=FISH[Math.min(state.fish,FISH.length-1)];
+  const L=FISH_LIST();
+  const got=state.fish<L.length;
+  const f=L[Math.min(state.fish,L.length-1)];
   if(got)state.fish++;
-  state.ok=0;
-  const last=state.stage>=STAGES.length-1;
+  state.ok=0;state.miss=0;
+  const last=state.stage>=STAGE_LIST().length-1;
   if(!last)state.stage++;
   save();
-  $("luTitle").textContent=last?"ぜんぶ クリア！":"ステージ クリア！";
+  $("luTitle").textContent=last?"チャンピオン！":"ステージ クリア！";
   $("luFish").textContent=got?f[0]:"🏆";
   $("luText").innerHTML=got
-    ?`「${f[1]}」が なかまに なったよ！<br>つぎは「${STAGES[Math.min(state.stage,STAGES.length-1)].name}」`
-    :`すごい！ もっと れんしゅう しよう！`;
+    ?`「${f[1]}」が なかまに なったよ！<br>つぎは「${curStage().name}」`
+    :"さかなずかん コンプリート！ すごい！";
   $("levelScreen").classList.add("show");
-  say(got?`${f[1]}が なかまに なったよ`:"ぜんぶ クリア すごい");
+  say(got?(isSchool()?`ステージ クリア。${f[1]}が なかまに なったよ`:`${f[1]}が なかまに なったよ`)
+        :(isSchool()?"ずかん コンプリート。よく がんばりました":"ぜんぶ あつめたよ すごい"));
 }
 
 function paintBook(){
-  let h="";FISH.forEach((f,i)=>{const on=i<state.fish;
+  let h="";
+  const L=FISH_LIST();
+  L.forEach((f,i)=>{const on=i<state.fish;
     h+=`<div class="card ${on?"":"locked"}">${on?f[0]:"❔"}<small>${on?f[1]:"？？？"}</small></div>`;});
   $("bookGrid").innerHTML=h;
-  $("bookCount").textContent=`${state.fish} / ${FISH.length} ひき あつめたよ`;}
+  $("bookCount").textContent=`${state.fish} / ${L.length} ${isSchool()?"しゅるい":"ひき"} あつめたよ`;
+}
 
-/* ───────── wiring ───────── */
+/* ═══════════ 配線 ═══════════ */
 bubbles();
-$("startBtn").onclick=async()=>{
-  try{AC=new (window.AudioContext||window.webkitAudioContext)();}catch(e){}
+function fillStageSelect(){
+  let h="";STAGE_LIST().forEach((s,i)=>{h+=`<option value="${i}">${i+1}. ${s.name}</option>`;});
+  $("pStage").innerHTML=h;
+}
+fillStageSelect();
+
+/* スタート画面の モードボタンと 設定の セレクトを つくる */
+(function buildModeUI(){
+  let b="",o="";
+  MODE_ORDER.forEach(id=>{const m=MODES[id];
+    b+=`<button class="modebtn m-${id}" data-mode="${id}">
+        <span class="t">${m.icon} ${m.label}</span><span class="d">${m.sub}</span></button>`;
+    o+=`<option value="${id}">${m.plabel}</option>`;
+  });
+  $("modeBtns").innerHTML=b;
+  $("pMode").innerHTML=o;
+  $("modeBtns").onclick=e=>{
+    const btn=e.target.closest(".modebtn");
+    if(btn)startMode(btn.dataset.mode);
+  };
+})();
+
+async function startMode(mode){
+  state.mode=MODES[mode]?mode:"yoji";
+  MODE_ORDER.forEach(id=>{const t=MODES[id].theme;if(t)document.body.classList.remove(t);});
+  if(M().theme)document.body.classList.add(M().theme);
+  try{AC=new (window.AudioContext||window.webkitAudioContext)();
+    if(AC.state==="suspended")AC.resume();}catch(e){}
+  refreshVoice();
+  if(window.speechSynthesis&&VOICEREADY){       /* iOS の初回解錠 */
+    const u=new SpeechSynthesisUtterance(" ");u.voice=JAVOICE;u.volume=0;
+    speechSynthesis.speak(u);
+  }
   await load();
+  fillStageSelect();
+  syncPanel();
   $("startScreen").classList.remove("show");
   $("game").style.visibility="visible";
-  nextQ();};
-$("resetBtn").onclick=async()=>{state.stage=0;state.ok=0;state.stars=0;state.fish=0;
-  await save();$("resetBtn").textContent="リセットしたよ！";};
+  nextQ();
+}
+
 $("luBtn").onclick=()=>{$("levelScreen").classList.remove("show");nextQ();};
 $("bookBtn").onclick=()=>{paintBook();$("bookScreen").classList.add("show");};
 $("bookClose").onclick=()=>$("bookScreen").classList.remove("show");
-$("soundBtn").onclick=e=>{state.sound=!state.sound;
+$("replayBtn").onclick=()=>{
+  replay();
+  say(state.q.say);
+  if(state.q.exprSay)say(state.q.exprSay,true);
+};
+$("soundBtn").onclick=e=>{
+  state.sound=!state.sound;
   e.currentTarget.textContent=state.sound?"🔊":"🔇";
-  if(!state.sound&&window.speechSynthesis)speechSynthesis.cancel();};
+  if(!state.sound&&window.speechSynthesis)speechSynthesis.cancel();
+  $("pVoice").value=state.sound?"1":"0";save();
+};
+
+/* おうちのかた */
+function syncPanel(){
+  $("pMode").value=state.mode;
+  $("pVoice").value=state.sound?"1":"0";
+  $("pSfx").value=state.sfx?"1":"0";
+  $("pRate").value=String(state.rate);
+  $("pStage").value=String(Math.min(state.stage,STAGE_LIST().length-1));
+  $("soundBtn").textContent=state.sound?"🔊":"🔇";
+  refreshVoice();
+}
+const openParent=()=>{syncPanel();$("parentScreen").classList.add("show");};
+$("parentBtn").onclick=openParent;
+$("gearBtn").onclick=openParent;
+$("pClose").onclick=()=>{$("parentScreen").classList.remove("show");};
+$("pVoice").onchange=e=>{state.sound=e.target.value==="1";
+  $("soundBtn").textContent=state.sound?"🔊":"🔇";save();};
+$("pSfx").onchange=e=>{state.sfx=e.target.value==="1";save();};
+$("pMode").onchange=async e=>{
+  await save();                       /* いまのモードを 保存してから 切りかえる */
+  await startMode(e.target.value);
+  $("parentScreen").classList.remove("show");
+};
+$("pRate").onchange=e=>{state.rate=parseFloat(e.target.value);save();
+  say("このはやさで よみます");};
+$("pStage").onchange=e=>{
+  state.stage=parseInt(e.target.value,10);state.ok=0;state.miss=0;save();
+  if($("game").style.visibility==="visible")nextQ();
+};
+$("pReset").onclick=async()=>{
+  state.stage=0;state.ok=0;state.stars=0;state.fish=0;state.miss=0;
+  await save();syncPanel();
+  $("pReset").textContent="リセットしました";
+  setTimeout(()=>$("pReset").textContent="さいしょから やりなおす",1600);
+  if($("game").style.visibility==="visible")nextQ();
+};
 </script>
 </body>
 </html>
